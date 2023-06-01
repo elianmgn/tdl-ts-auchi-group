@@ -1,73 +1,14 @@
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">SB Admin Angular9 BS4 </a>
+        <a class="navbar-brand" href="#">Auchi </a>
         <button (click)="toggleSidebar()" class="navbar-toggler" type="button">
             <!-- <span class="navbar-toggler-icon"></span> -->
             <i aria-hidden="true" class="fa fa-bars text-muted"></i>
         </button>
-            <div class="collapse navbar-collapse">
-                <form class="form-inline my-2 my-lg-0">
-                    <input class="form-control mr-sm-2" placeholder="{{ 'Search' }}" type="text" />
-                </form>
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href data-bs-toggle="dropdown">
-                            <i class="fa fa-envelope"></i> <b class="caret"></b><span class="sr-only">(current)</span>
-                        </a>
-                        <ul class="dropdown-menu-right messages dropdown-menu">
-                            <li class="media dropdown-item">
-                                <img alt="Generic placeholder image" class="d-flex align-self-center mr-3"
-                                    src="http://i.huffpost.com/gadgets/slideshows/461162/slide_461162_6224974_sq50.jpg" />
-                                <div class="media-body">
-                                    <h5 class="mt-0 mb-1">John Smith</h5>
-                                    <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
-                                    <p class="last">Lorem ipsum dolor sit amet, consectetur...</p>
-                                </div>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href data-bs-toggle="dropdown">
-                            <i class="fa fa-bell"></i> <b class="caret"></b><span class="sr-only">(current)</span>
-                        </a>
-                        <div class="dropdown-menu-right dropdown-menu">
-                            <a class="dropdown-item" href="">
-                                {{ 'Pending Task' }} <span class="badge badge-info">6</span>
-                            </a>
-                            <a class="dropdown-item" href="">
-                                {{ 'In queue' }} <span class="badge badge-info"> 13</span>
-                            </a>
-                            <a class="dropdown-item" href="">
-                                {{ 'Mail' }} <span class="badge badge-info"> 45</span>
-                            </a>
-                    <li class="dropdown-divider"></li>
-                    <a class="dropdown-item" href="">
-                        {{ 'View All' }}
-                    </a>
-            </div>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href data-bs-toggle="dropdown">
-                    <i class="fas fa-user"></i> John Smith <b class="caret"></b>
-                </a>
-                <div class="dropdown-menu-right dropdown-menu">
-                    <a class="dropdown-item" href="">
-                        <i class="fas fa-fw fa-user"></i> {{ 'Profile' }}
-                    </a>
-                    <a class="dropdown-item" href="">
-                        <i class="fas fa-fw fa-envelope"></i> {{ 'Inbox' }}
-                    </a>
-                    <a class="dropdown-item" href="">
-                        <i class="fas fa-fw fa-cog"></i> {{ 'Settings' }}
-                    </a>
-                    <!--
-                    <a (click)="onLoggedout()" [routerLink]="['/login']" class="dropdown-item">
-                        <i class="fas fa-fw fa-power-off"></i> {{ 'Log Out' | translate }}
-                    </a> 
-                    -->
-                </div>
-            </li>
-            </ul>
+        <div class="collapse navbar-collapse">
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" placeholder="{{ 'Search' }}" type="text" />
+            </form>
         </div>
     </div>
 </nav>
