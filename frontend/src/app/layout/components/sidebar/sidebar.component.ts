@@ -1,58 +1,40 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
+import { Observable } from 'rxjs';
+import { SidebarDirection } from './sidebar-direction';
+import { NavigationService } from 'app/layout/navigation.service';
 
 @Component({
-	selector: 'app-sidebar',
-	templateUrl: './sidebar.component.html',
-	styleUrls: ['./sidebar.component.scss']
+  selector: 'app-sidebar',
+  templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class SidebarComponent implements OnInit {
-	isActive: boolean;
-	collapsed: boolean;
-	showMenu: string;
-	pushRightClass: string;
 
-	@Output() collapsedEvent = new EventEmitter<boolean>();
+  showSideNav: Observable<boolean>;
 
-	constructor(public router: Router) {
-		this.router.events.subscribe((val) => {
-			if (val instanceof NavigationEnd && window.innerWidth <= 992 && this.isToggled()) {
-				this.toggleSidebar();
-			}
-		});
-	}
+  @Input() sidenavTemplateRef: any;
+  @Input() duration: number = 0.25;
+  @Input() navWidth: number = window.innerWidth;
+  @Input() direction: SidebarDirection = SidebarDirection.Left;
+  
+  constructor(private navService: NavigationService){}
 
-	ngOnInit() {
-		this.isActive = false;
-		this.collapsed = false;
-		this.showMenu = '';
-		this.pushRightClass = 'push-right';
-	}
+  ngOnInit(): void {
+    this.showSideNav = this.navService.getShowNav();
+  }
 
-	eventCalled() {
-		this.isActive = !this.isActive;
-	}
+  onSidebarClose() {
+    this.navService.setShowNav(false);
+  }
 
-	addExpandClass(element: any) {
-		if (element === this.showMenu) {
-			this.showMenu = '0';
-		} else {
-			this.showMenu = element;
-		}
-	}
-
-	toggleCollapsed() {
-		this.collapsed = !this.collapsed;
-		this.collapsedEvent.emit(this.collapsed);
-	}
-
-	isToggled(): boolean {
-		const dom: any = document.querySelector('body');
-		return dom.classList.contains(this.pushRightClass);
-	}
-
-	toggleSidebar() {
-		const dom: any = document.querySelector('body');
-		dom.classList.toggle(this.pushRightClass);
-	}
+  getSideNavBarStyle(showNav: boolean) {
+    let navBarStyle: any = {};
+    
+    navBarStyle.transition = this.direction + ' ' + this.duration + 's, visibility ' + this.duration + 's';
+    navBarStyle.width = this.navWidth + 'px';
+    navBarStyle[this.direction] = (showNav ? 0 : (this.navWidth * -1)) + 'px';
+    
+    return navBarStyle;
+  }
 }

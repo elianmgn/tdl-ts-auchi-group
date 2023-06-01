@@ -1,0 +1,10 @@
+.main-container {
+    display: flex;
+    flex-direction: column;
+    color: #FFF;
+    height: 100%;
+
+    section {
+        flex: 1;
+    }
+}

@@ -1,14 +1,5 @@
-<nav class="navbar navbar-expand-lg fixed-top">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Auchi </a>
-        <button (click)="toggleSidebar()" class="navbar-toggler" type="button">
-            <!-- <span class="navbar-toggler-icon"></span> -->
-            <i aria-hidden="true" class="fa fa-bars text-muted"></i>
-        </button>
-        <div class="collapse navbar-collapse">
-            <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" placeholder="{{ 'Search' }}" type="text" />
-            </form>
-        </div>
+<header>
+    <div class="header-menu">
+        <span (click)="toggleSideNav()" class="menu-icon material-icons">menu</span>
     </div>
-</nav>
+</header>
