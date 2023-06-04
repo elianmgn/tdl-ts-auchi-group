@@ -1,0 +1,14 @@
+<app-sidebar
+  [sidenavTemplateRef]="navContent"
+  [navWidth]="280" 
+  [duration]="0.5"></app-sidebar>
+<div class="main-container">
+  <app-header></app-header>
+  <section>
+    <router-outlet></router-outlet>
+  </section>
+</div>
+
+<ng-template #navContent>
+  <app-sidebar-content></app-sidebar-content>
+</ng-template>

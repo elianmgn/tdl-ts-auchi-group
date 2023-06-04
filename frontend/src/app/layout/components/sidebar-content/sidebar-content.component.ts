@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./sidebar-content.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class SideNavContentComponent implements OnInit {
+export class SidebarContentComponent implements OnInit {
 
   navItems = [
     { label: 'Dashboard', route: '/dashboard'},

@@ -10,7 +10,7 @@
     
     <!-- side bar-->
     <div class="side-nav-bar-menu-container" 
-    [ngStyle]="getSideNavBarStyle((showSideNav | async))">
+    [ngStyle]="getSideNavBarStyle((showSideNav | async)!)">
         
         <!-- close button -->
         <div><span class="material-icons side-nav-bar-close" (click)="onSidebarClose()">clear</span></div>
