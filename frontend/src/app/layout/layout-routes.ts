@@ -21,7 +21,7 @@ export const layoutRoutes: Routes = [
           )
       },
       {
-        path:         'transaction-list',
+        path:         'transactions',
         loadChildren: () =>
           import('../modules/transaction-list/transaction-list.routing.module').then(
             mod => mod.TransactionListRoutingModule
