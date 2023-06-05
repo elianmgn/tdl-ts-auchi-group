@@ -1,14 +1,26 @@
-<nav class="navbar navbar-expand-lg fixed-top">
+<nav class="navbar navbar-expand-lg bg-light sticky-top ">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Auchi </a>
-        <button (click)="toggleSidebar()" class="navbar-toggler" type="button">
-            <!-- <span class="navbar-toggler-icon"></span> -->
-            <i aria-hidden="true" class="fa fa-bars text-muted"></i>
+        <a class="navbar-brand" href="#">
+            <img src="assets/budget.png" height="30">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse">
-            <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" placeholder="{{ 'Search' }}" type="text" />
-            </form>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-link" routerLink="/dashboard">Dashboard</a>
+                <a class="nav-link" routerLink="/transactions">Transactions</a>
+            </div>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
+        
+            <!-- Icons -->
+            <ul class="navbar-nav d-flex flex-row me-1">
+                <button href="/petisa" mat-icon-button class="logout-icon">
+                    <mat-icon>logout</mat-icon>
+                </button>
+            </ul>
+            
         </div>
     </div>
 </nav>

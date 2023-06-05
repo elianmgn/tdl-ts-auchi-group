@@ -1,33 +1,37 @@
-import { Component, OnInit } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { NavigationService } from 'app/layout/navigation.service';
+
+import {MatIconModule} from '@angular/material/icon';
+import {MatButtonModule} from '@angular/material/button';
+import {MatToolbarModule} from '@angular/material/toolbar';
+
+// @Component({
+//   selector: 'app-header',
+//   templateUrl: './header.component.html',
+//   styleUrls: ['./header.component.css'],
+//   // standalone: true,
+//   // imports: [MatToolbarModule, MatButtonModule, MatIconModule],
+//   encapsulation: ViewEncapsulation.None
+// })
 
 @Component({
-	selector: 'app-header',
-	templateUrl: './header.component.html',
-	styleUrls: ['./header.component.scss']
+  selector: 'app-header',
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class HeaderComponent implements OnInit {
-	public pushRightClass: string;
 
-	constructor(public router: Router) {
-		this.router.events.subscribe((val) => {
-			if (val instanceof NavigationEnd && window.innerWidth <= 992 && this.isToggled()) {
-				this.toggleSidebar();
-			}
-		});
-	}
+  constructor(private navService: NavigationService) { }
 
-	ngOnInit() {
-		this.pushRightClass = 'push-right';
-	}
+  ngOnInit(): void {
+  }
 
-	isToggled(): boolean {
-		const dom: any = document.querySelector('body');
-		return dom.classList.contains(this.pushRightClass);
-	}
+  toggleSideNav() {
+    this.navService.setShowNav(true);
+  }
 
-	toggleSidebar() {
-		const dom: any = document.querySelector('body');
-		dom.classList.toggle(this.pushRightClass);
-	}
+  getPage() {
+    this.navService.setShowNav(true);
+  }
 }

@@ -4,21 +4,19 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LayoutPageComponent } from './layout/pages/layout.page.component';
-import { HeaderComponent } from './layout/components/header/header.component';
-import { SidebarComponent } from './layout/components/sidebar/sidebar.component';
+import { CommonModule } from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    LayoutPageComponent,
-    HeaderComponent,
-    SidebarComponent
+    AppComponent
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
