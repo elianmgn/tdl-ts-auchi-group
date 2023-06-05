@@ -1,22 +1,11 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { User } from './entities/user.entity';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      database: 'trackerdb',
-      username: 'root',
-      password: 'root',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
-    }),
-    TypeOrmModule.forFeature([User]),
-  ],
+  imports:     [UserModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers:   []
 })
 export class AppModule {}
+
