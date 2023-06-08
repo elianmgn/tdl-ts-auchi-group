@@ -1,8 +1,8 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import {
   Outlet
 } from 'react-router-dom';
-import Header from './components/Header';
+import Header from './header/Header';
 
 function Layout() {
   return (

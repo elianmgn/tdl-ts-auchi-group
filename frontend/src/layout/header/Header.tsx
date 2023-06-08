@@ -5,7 +5,6 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -13,13 +12,16 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import { useNavigate } from 'react-router-dom';
+import budgetifyLogo from '../../assets/images/logo.svg';
+import './Header.css';
+
 
 const pages = ['Dashboard', 'Transactions', 'Reports', 'Budgets'];
 const settings = ['Profile', 'Account', 'Logout'];
 
 export default function Header() {
   
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -35,24 +37,10 @@ export default function Header() {
     <AppBar position="static">
     <Container maxWidth="xl">
       <Toolbar disableGutters>
-        <MonetizationOnIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-        <Typography
-          variant="h6"
-          noWrap
-          component="a"
-          href="/"
-          sx={{
-            mr: 2,
-            display: { xs: 'none', md: 'flex' },
-            fontFamily: 'monospace',
-            fontWeight: 700,
-            letterSpacing: '.3rem',
-            color: 'inherit',
-            textDecoration: 'none',
-          }}
-        >
-          BUDGETIFY
-        </Typography>
+        <div className='header-app-container'>
+          <img src={budgetifyLogo} alt="Logo" className="app-logo" />
+          <p className='app-name'>BUDGETIFY</p>
+        </div>
         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
           {pages.map((page) => (
             <Button
