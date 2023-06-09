@@ -1,7 +1,7 @@
 import {
   AutoIncrement,
-  BelongsTo,
   Column,
+  HasMany,
   Model,
   PrimaryKey,
   Table,
@@ -18,6 +18,6 @@ export class User extends Model<User> {
   @Column({ unique: true })
   username: string;
 
-  @BelongsTo(() => Transaction)
-  addedTransactions: Transaction[];
+  @HasMany(() => Transaction)
+  transactions: Transaction[];
 }
