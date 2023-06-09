@@ -18,6 +18,18 @@ export class User extends Model<User> {
   @Column({ unique: true })
   username: string;
 
+  @Column({ unique: true })
+  email: string;
+
+  @Column
+  password: string;
+
+  @Column({ field: 'first_name' })
+  firstName: string;
+
+  @Column({ field: 'last_name' })
+  lastName: string;
+
   @HasMany(() => Transaction)
   transactions: Transaction[];
 }
