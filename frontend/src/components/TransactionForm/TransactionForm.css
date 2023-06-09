@@ -1,0 +1,22 @@
+.container {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  padding: 5%;
+}
+.form-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+  width: 100%;
+  border: 1px solid;
+  border-radius: 10px;
+  border-color: lightgray;
+  gap: 10px;
+  padding: 50px;
+}
+.bottom-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
