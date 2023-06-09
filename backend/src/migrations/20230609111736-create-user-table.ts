@@ -15,6 +15,10 @@ module.exports = {
         type: Sequelize.STRING,
         unique: true,
       },
+      password: {
+        type: Sequelize.STRING,
+        unique: true,
+      },
       firstName: {
         type: Sequelize.STRING,
         field: 'first_name',
