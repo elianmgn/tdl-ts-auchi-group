@@ -9,7 +9,6 @@ import {
 import Layout from './layout/Layout';
 import DashboardPage from './pages/DashboardPage';
 import TransactionsPage from './pages/TransactionsPage';
-import TransactionsFormPage from './pages/TransactionsFormPage';
 import ReportsPage from './pages/ReportsPage';
 import BudgetsPage from './pages/BudgetsPage';
 
@@ -22,7 +21,6 @@ function App() {
           <Route path="/" element={<Navigate to="/dashboard" />} />
           <Route path="/dashboard" element={<DashboardPage/>}/>
           <Route path="/transactions" element={<TransactionsPage/>}/>
-          <Route path="/transactions/form" element={<TransactionsFormPage/>}/>
           <Route path="/reports" element={<ReportsPage/>}/>
           <Route path="/budgets" element={<BudgetsPage/>}/>
         
