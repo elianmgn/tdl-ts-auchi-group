@@ -4,7 +4,7 @@ type TransactionEntity = {
   description: string; // A brief description of the transaction.
   category: string; // Category of transaction (Supermarket | Subscription | Rent | Salary | Gift | Transfer | Education | Health | Shopping | Bills | Entertainment | Transportation | Pets | Home | Sport | Utilities | Electronics | Insurance | Car | Friends | Taxes | Other)
   amount: number; // Amount of transaction
-  date: number; // Date of transaction. Format: YYYY-MM-DD
+  date: string; // Date of transaction. Format: YYYY-MM-DD
   type: string; // Type of transaction (Income | Expense)
   payment_method: string; // Payment method (Cash | Credit Card | Debit Card | Check | Other)
 };
