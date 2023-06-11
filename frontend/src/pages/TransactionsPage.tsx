@@ -23,7 +23,7 @@ export default function TransactionsPage() {
       <Fab variant="extended" onClick={handleOpen}>
         <ReceiptLongIcon sx={{ mr: 1 }} />
         Add
-      </Fab >
+      </Fab>
     </div>
   );
 }
