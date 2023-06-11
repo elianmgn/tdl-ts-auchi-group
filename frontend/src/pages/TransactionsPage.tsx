@@ -18,11 +18,12 @@ export default function TransactionsPage() {
 
   return (
     <div>
+      <TransactionForm open={open} handleClose={handleClose}/>
       <TransactionList />
-      <Fab variant="extended" href="transactions/form">
+      <Fab variant="extended" onClick={handleOpen}>
         <ReceiptLongIcon sx={{ mr: 1 }} />
         Add
-      </Fab >
+      </Fab>
     </div>
   );
 }
