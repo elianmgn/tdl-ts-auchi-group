@@ -15,10 +15,11 @@ import {
 import TransactionEntity from '../../models/TransactionEntity';
 import { Typography } from '@mui/material';
 
-import { matchPaymentMethodIcon } from '../../utils/TransactionsIcons';
+import { matchPaymentMethodIcon } from '../../utils/TransactionIcons';
 import dayjs from 'dayjs';
 
 import CategoryIcon from '@mui/icons-material/Category';
+import TransactionForm from './TransactionForm';
 
 interface Column {
   id: 'description' | 'category' | 'date' | 'amount' | 'payment_method';
@@ -72,13 +73,24 @@ function createData(
 }
 
 const rows = [
-  createData(1, 'Verduleria', 'MARKET', 'CASH', 'EXPENSE', '2023-06-11', 324452),
+  createData(1, 'Verduleria', 'SUPERMARKET', 'CASH', 'EXPENSE', '2023-06-11', 324452),
   createData(2, 'Ingreso de dinero', 'OTHER', 'TRANSFER', 'INCOME', '2023-09-04', 3489),
 ];
 
 export default function StickyHeadTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  const [openEdit, setOpenEdit] = React.useState(false);
+  const [transactionInfo, setTransactionInfo] = React.useState<TransactionEntity | null>(null);
+
+  const handleOpenEdit = () => {
+    setOpenEdit(true);
+  };
+
+  const handleCloseEdit = () => {
+    setOpenEdit(false);
+  };
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -91,6 +103,11 @@ export default function StickyHeadTable() {
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+      <TransactionForm
+        open={openEdit}
+        handleClose={handleCloseEdit}
+        transactionInfo={transactionInfo}
+      />
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -109,7 +126,15 @@ export default function StickyHeadTable() {
           <TableBody>
             {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
               return (
-                <TableRow hover tabIndex={-1} key={row.id} onClick={() => console.log('petisa')}>
+                <TableRow
+                  hover
+                  tabIndex={-1}
+                  key={row.id}
+                  onClick={() => {
+                    setTransactionInfo(row);
+                    handleOpenEdit();
+                  }}
+                >
                   <TableCell key="date">{dayjs(row['date']).format('DD MMM')}</TableCell>
                   <TableCell key="category">
                     <Chip
