@@ -19,7 +19,6 @@ export const matchPaymentMethodIcon = (paymentMethod: string) => {
 };
 
 export const matchCategoryIcon = (category: string) => {
-  //Supermarket | Subscription | Rent | Salary | Gift | Transfer | Education | Health | Shopping | Bills | Entertainment | Transportation | Pets | Home | Sport | Utilities | Electronics | Insurance | Car | Friends | Other
   switch (category) {
     case 'SUPERMARKET':
       return <LocalGroceryStoreIcon />;
