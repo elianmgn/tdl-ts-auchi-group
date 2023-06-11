@@ -18,7 +18,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle
+  DialogTitle,
 } from '@mui/material';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
@@ -38,6 +38,9 @@ import { number, object, string, TypeOf } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
 
+import TransactionEntity from '../../models/TransactionEntity';
+import { TRANSACTIONS_CATEGORIES } from '../../utils/TransactionEnums';
+
 const formSchema = object({
   description: string()
     .nonempty('Name is required')
@@ -56,11 +59,12 @@ type RegisterInput = TypeOf<typeof formSchema>;
 interface ComponenteProps {
   open: boolean;
   handleClose: () => void;
+  transactionInfo?: TransactionEntity | null;
 }
 
-const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose }) => {
+const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transactionInfo }) => {
   const [loading, setLoading] = useState(false);
-  const [alertInfo, setAlertInfo] = useState({open: false, error: false, message: ''});
+  const [alertInfo, setAlertInfo] = useState({ open: false, error: false, message: '' });
 
   const {
     register,
@@ -75,6 +79,7 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose }) => {
 
   const resetValues = () => {
     reset();
+    setValue('category', '');
     setValue('payment_method', 'CASH');
     setValue('type', 'INCOME');
     setValue('date', dayjs().format('YYYY-MM-DD').toString());
@@ -85,24 +90,40 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose }) => {
       return;
     }
 
-    setAlertInfo({open: false, error: alertInfo['error'], message: alertInfo['message']});
+    setAlertInfo({ open: false, error: alertInfo['error'], message: alertInfo['message'] });
   };
 
   async function postNewTransaction(values: RegisterInput) {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8080/transactions/admin', {
-        method: 'POST',
-        // body: JSON.stringify({
-        //   description: watch('description'),
-        //   category: watch('category'),
-        //   amount: watch('amount'),
-        //   date: watch('date'),
-        //   type: watch('type'),
-        //   payment_method: watch('payment_method'),
-        // }),
-        body: JSON.stringify(values),
-      });
+      let response;
+      if (transactionInfo) {
+        response = await fetch('http://localhost:8080/transactions/admin', {
+          method: 'POST',
+          // body: JSON.stringify({
+          //   description: watch('description'),
+          //   category: watch('category'),
+          //   amount: watch('amount'),
+          //   date: watch('date'),
+          //   type: watch('type'),
+          //   payment_method: watch('payment_method'),
+          // }),
+          body: JSON.stringify(values),
+        });
+      } else {
+        response = await fetch('http://localhost:8080/transactions/admin', {
+          method: 'PATCH',
+          // body: JSON.stringify({
+          //   description: watch('description'),
+          //   category: watch('category'),
+          //   amount: watch('amount'),
+          //   date: watch('date'),
+          //   type: watch('type'),
+          //   payment_method: watch('payment_method'),
+          // }),
+          body: JSON.stringify(values),
+        });
+      }
 
       if (!response.ok) {
         // Si la respuesta no es exitosa, lanza un error
@@ -112,18 +133,31 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose }) => {
       // const data = await response.json();
 
       setLoading(false);
-      setAlertInfo({open: true, error: false, message: 'The transaction was saved successfully.'});
+      setAlertInfo({
+        open: true,
+        error: false,
+        message: 'The transaction was saved successfully.',
+      });
       handleClose();
       resetValues();
     } catch (error) {
-      setAlertInfo({open: true, error: true, message: 'There was an error with the request.'});
+      setAlertInfo({ open: true, error: true, message: 'There was an error with the request.' });
       setLoading(false);
       console.error('Error:', error);
     }
   }
 
   useEffect(() => {
-    resetValues();
+    if (transactionInfo) {
+      setValue('description', transactionInfo.description);
+      setValue('category', transactionInfo.category);
+      setValue('amount', transactionInfo.amount);
+      setValue('date', transactionInfo.date);
+      setValue('type', transactionInfo.type);
+      setValue('payment_method', transactionInfo.payment_method);
+    } else {
+      resetValues();
+    }
     setLoading(false);
   }, [open]);
 
@@ -174,6 +208,7 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose }) => {
                     type: 'number',
                   }}
                   id="amount"
+                  value={watch('amount')}
                   startAdornment={<InputAdornment position="start">$</InputAdornment>}
                   label="Amount"
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -236,13 +271,18 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose }) => {
             <FormControl fullWidth error={!!errors['category']} required>
               <InputLabel id="category-label">Category</InputLabel>
               <Select
+                value={watch('category')}
                 labelId="category-label"
                 id="category-input"
                 label="Category"
                 defaultValue=""
                 {...register('category')}
               >
-                <MenuItem value={'supermarket'}>Supermarket</MenuItem>
+                {TRANSACTIONS_CATEGORIES.map((category: string) => (
+                  <MenuItem key={category} value={category}>
+                    {category.charAt(0).toUpperCase() + category.toLowerCase().slice(1)}
+                  </MenuItem>
+                ))}
               </Select>
               <FormHelperText>
                 {errors['category'] ? errors['category'].message : ''}
