@@ -8,11 +8,14 @@ import {
   Put,
   Query,
   Request,
+  UseGuards,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { Transaction } from './model';
 import { CategoryService } from '../category/category.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('transactions')
 export class TransactionController {
   constructor(

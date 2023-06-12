@@ -12,10 +12,10 @@ export class AuthService {
   ) {}
 
   async validateUser(
-    email: string,
+    username: string,
     pass: string,
   ): Promise<Omit<User, 'password'>> {
-    const user = await this.userService.findOneUserByEmail(email);
+    const user = await this.userService.findOneUserByUsername(username);
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
@@ -29,10 +29,10 @@ export class AuthService {
   }
 
   login(user: any) {
-    const payload = { username: user.email, sub: user.id };
+    const payload = { username: user.username, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),
-      userName: user.username,
+      username: user.username,
     };
   }
 }
