@@ -2,12 +2,14 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Post,
   Put,
   Request,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
+import { Transaction } from './model';
 
 @Controller('transactions')
 export class TransactionController {
