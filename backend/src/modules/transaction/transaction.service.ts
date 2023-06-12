@@ -23,7 +23,9 @@ export class TransactionService {
 
   async addUserTransaction(username: string, transaction: Transaction) {
     const user = await this.userService.findOneUserByUsername(username);
-    transaction.userId = user.id;
-    return Transaction.create(transaction);
+    return Transaction.create({
+      ...transaction,
+      userId: user.id,
+    });
   }
 }

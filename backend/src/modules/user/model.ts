@@ -32,4 +32,13 @@ export class User extends Model<User> {
 
   @HasMany(() => Transaction)
   transactions: Transaction[];
+
+  @Column({ field: 'created_at' })
+  createdAt: Date;
+
+  @Column({ field: 'updated_at' })
+  updatedAt: Date;
+
+  @Column({ field: 'deleted_at' })
+  deletedAt: Date;
 }

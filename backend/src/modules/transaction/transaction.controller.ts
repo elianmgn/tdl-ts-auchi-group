@@ -1,6 +1,5 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
-import { Transaction } from './model';
 
 @Controller('transactions')
 export class TransactionController {
@@ -14,10 +13,9 @@ export class TransactionController {
   }
 
   @Post(':username')
-  addUserTransaction(
-    @Param('username') username: string,
-    @Body() transaction: Transaction,
-  ) {
+  addUserTransaction(@Param('username') username: string, @Request() req) {
+    const transaction = req.body;
+    transaction['paymentMethod'] = transaction.payment_method;
     return this.transactionService.addUserTransaction(username, transaction);
   }
 }
