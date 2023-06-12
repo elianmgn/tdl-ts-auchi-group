@@ -3,8 +3,10 @@ import { Server as HttpServer } from 'http';
 import { Sequelize } from 'sequelize-typescript';
 import * as Umzug from 'umzug';
 import { AppModule } from './app.module';
+import * as express from 'express';
 import { database, paths, server } from './config';
 import { User } from './modules/user/model';
+import { Transaction } from './modules/transaction/model';
 
 export class ServerSetup {
   private http!: HttpServer;
@@ -39,7 +41,7 @@ export class ServerSetup {
       username: database.username,
       password: database.password,
       sync: { force: database.sync.force },
-      models: [User], // List of sequelize models
+      models: [User, Transaction], // List of sequelize models
     });
 
     this.umzug = new Umzug({
@@ -89,6 +91,7 @@ export class ServerSetup {
   async initNestServer() {
     const app = await NestFactory.create(AppModule);
     app.enableCors();
+    app.use(express.json());
     await app.listen(server.port);
     console.log(`App is running on PORT: ${server.port}`);
   }
