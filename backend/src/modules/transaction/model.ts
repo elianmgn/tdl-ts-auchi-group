@@ -50,3 +50,17 @@ export class Transaction extends Model<Transaction> {
   @Column({ field: 'deleted_at' })
   deletedAt: Date;
 }
+
+export type UpdateTransactionDto = {
+  description: string;
+
+  category: string;
+
+  amount: number;
+
+  date: Date;
+
+  type: string;
+
+  paymentMethod: string;
+};

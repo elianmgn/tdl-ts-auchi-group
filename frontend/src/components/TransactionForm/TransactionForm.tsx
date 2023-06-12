@@ -97,9 +97,12 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
     setLoading(true);
     try {
       let response;
-      if (transactionInfo) {
+      if (!transactionInfo) {
         response = await fetch('http://localhost:8080/transactions/admin', {
           method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
           // body: JSON.stringify({
           //   description: watch('description'),
           //   category: watch('category'),
