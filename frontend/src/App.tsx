@@ -1,5 +1,5 @@
 import './App.css';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Layout from './layout/Layout';
 import AuthLayout from './layout/AuthLayout';
@@ -12,8 +12,8 @@ import ReportsPage from './pages/ReportsPage';
 import { AuthProvider, AuthContext } from './contexts/AuthContext';
 
 function App() {
-    const { user } = React.useContext(AuthContext);
- 
+  const { user } = React.useContext(AuthContext);
+  console.log(user);
   return (
     <AuthProvider>
       <Router>
@@ -25,6 +25,7 @@ function App() {
               <Route path="/transactions" element={<TransactionsPage />} />
               <Route path="/categories" element={<CategoriesPage />} />
               <Route path="/reports" element={<ReportsPage />} />
+              <Route path="*" element={<Navigate to="/" />} />
             </Route>
           ) : (
             <Route element={<AuthLayout />}>

@@ -1,18 +1,11 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { BrowserRouterProps } from 'react-router-dom';
 import { useLocalStorage } from '../services/localStorageService';
-
-// Define el tipo de usuario
-type User = {
-  email: string;
-  name: string;
-  userToken?: string;
-  profileUrl?: string;
-};
+import { UserEntity } from '../models/UserEntity';
 
 // Define el tipo de contexto
 type AuthContextType = {
-  user: User | null;
+  user: UserEntity | null;
   login: (email: string, password: string) => void;
   register: (email: string, password: string, name: string) => void;
   logout: () => void;
@@ -39,7 +32,7 @@ export const AuthProvider: React.FC<BrowserRouterProps> = ({ children }) => {
   const { setItem, getItem, removeItem } = useLocalStorage();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserEntity | null>(null);
 
   useEffect(() => {
     const user = getItem('user');
@@ -49,10 +42,10 @@ export const AuthProvider: React.FC<BrowserRouterProps> = ({ children }) => {
   }, []);
 
   // Función de inicio de sesión
-  const login = (email: string, password: string) => {
+  const login = async (email: string, password: string) => {
     setIsLoading(true);
     // Lógica de autenticación (puede ser una solicitud a la API, etc.)
-    const user: User = {
+    const user: UserEntity = {
       email,
       name: 'John Doe',
     };
@@ -65,7 +58,7 @@ export const AuthProvider: React.FC<BrowserRouterProps> = ({ children }) => {
   const register = (email: string, password: string, name: string) => {
     setIsLoading(true);
     // Lógica de registro (puede ser una solicitud a la API, etc.)
-    const user: User = {
+    const user: UserEntity = {
       email,
       name,
     };
