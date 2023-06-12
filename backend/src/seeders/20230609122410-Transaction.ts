@@ -8,7 +8,7 @@ module.exports = {
         user_id: 1,
         description: 'Entradas Taylor',
         category: 'ENTERTAINMENT',
-        amount: 30000,
+        amount: 40000,
         date: new Date(),
         type: 'EXPENSE',
         payment_method: 'CASH',

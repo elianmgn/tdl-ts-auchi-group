@@ -103,27 +103,11 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
           headers: {
             'Content-Type': 'application/json'
           },
-          // body: JSON.stringify({
-          //   description: watch('description'),
-          //   category: watch('category'),
-          //   amount: watch('amount'),
-          //   date: watch('date'),
-          //   type: watch('type'),
-          //   payment_method: watch('payment_method'),
-          // }),
           body: JSON.stringify(values),
         });
       } else {
-        response = await fetch('http://localhost:8080/transactions/admin', {
-          method: 'PATCH',
-          // body: JSON.stringify({
-          //   description: watch('description'),
-          //   category: watch('category'),
-          //   amount: watch('amount'),
-          //   date: watch('date'),
-          //   type: watch('type'),
-          //   payment_method: watch('payment_method'),
-          // }),
+        response = await fetch(`http://localhost:8080/transactions/${transactionInfo.id}`, {
+          method: 'PUT',
           body: JSON.stringify(values),
         });
       }

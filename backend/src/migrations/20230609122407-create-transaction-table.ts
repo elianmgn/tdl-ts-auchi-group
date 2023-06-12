@@ -28,13 +28,7 @@ module.exports = {
         type: Sequelize.ENUM('INCOME', 'EXPENSE'),
       },
       payment_method: {
-        type: Sequelize.ENUM(
-          'CASH',
-          'CREDIT_CARD',
-          'DEBIT_CARD',
-          'CHECK',
-          'OTHER',
-        ),
+        type: Sequelize.ENUM('CASH', 'CREDIT-CARD', 'TRANSFER', 'OTHER'),
       },
       createdAt: {
         type: Sequelize.DATE,
