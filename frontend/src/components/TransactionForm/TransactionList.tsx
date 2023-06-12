@@ -2,7 +2,6 @@ import * as React from 'react';
 import './TransactionList.css';
 import {
   Chip,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -10,6 +9,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  CircularProgress,
 } from '@mui/material';
 
 import TransactionEntity from '../../models/TransactionEntity';
@@ -51,36 +51,12 @@ const columns: readonly Column[] = [
   },
 ];
 
-// interface TransactionEntity {
-//   id: number;
-//   description: string;
-//   category: string;
-//   payment_method: string;
-//   date: number;
-//   amount: number;
-// }
-
-function createData(
-  id: number,
-  description: string,
-  category: string,
-  payment_method: string,
-  type: string,
-  date: string,
-  amount: number,
-): TransactionEntity {
-  return { id, description, category, payment_method, type, date, amount };
-}
-
-const rows = [
-  createData(1, 'Verduleria', 'SUPERMARKET', 'CASH', 'EXPENSE', '2023-06-11', 324452),
-  createData(2, 'Ingreso de dinero', 'OTHER', 'TRANSFER', 'INCOME', '2023-09-04', 3489),
-];
-
 export default function StickyHeadTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [transactions, setTrasactions] = React.useState<TransactionEntity[]>([]);
 
+  const [isLoading, setIsLoading] = React.useState(true);
   const [openEdit, setOpenEdit] = React.useState(false);
   const [transactionInfo, setTransactionInfo] = React.useState<TransactionEntity | null>(null);
 
@@ -101,80 +77,109 @@ export default function StickyHeadTable() {
     setPage(0);
   };
 
+  const fetchTransactions = async () => {
+    const response = await fetch(`http://localhost:8080/transactions/admin`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const transactionsData = await response.json();
+    setTrasactions(transactionsData);
+  };
+
+  React.useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  React.useEffect(() => {
+    setIsLoading(false);
+  }, [transactions]);
+
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <TransactionForm
-        open={openEdit}
-        handleClose={handleCloseEdit}
-        transactionInfo={transactionInfo}
-      />
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth, width: column.width }}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-              return (
-                <TableRow
-                  hover
-                  tabIndex={-1}
-                  key={row.id}
-                  onClick={() => {
-                    setTransactionInfo(row);
-                    handleOpenEdit();
-                  }}
-                >
-                  <TableCell key="date">{dayjs(row['date']).format('DD MMM')}</TableCell>
-                  <TableCell key="category">
-                    <Chip
-                      variant="outlined"
-                      icon={<CategoryIcon />}
-                      label={
-                        row['category'].charAt(0).toUpperCase() +
-                        row['category'].toLowerCase().slice(1)
-                      }
-                    />
-                  </TableCell>
-                  <TableCell key="description">{row['description']}</TableCell>
-                  <TableCell key="amount" align="right">
-                    <Typography
-                      style={{
-                        color: row['type'] === 'EXPENSE' ? 'darkred' : 'darkgreen',
-                        fontWeight: 'bold',
-                      }}
+    <div style={{ width: '100%', overflow: 'hidden' }}>
+      {isLoading ? (
+        <div className='container'>
+          <CircularProgress />
+        </div>
+      ) : (
+        <div>
+          <TransactionForm
+            open={openEdit}
+            handleClose={handleCloseEdit}
+            transactionInfo={transactionInfo}
+          />
+          <TableContainer sx={{ maxHeight: 440 }}>
+            <Table stickyHeader aria-label="sticky table">
+              <TableHead>
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableCell
+                      key={column.id}
+                      align={column.align}
+                      style={{ minWidth: column.minWidth, width: column.width }}
                     >
-                      {row['type'] === 'EXPENSE' ? '- ' : '+ '}$ {row['amount']}
-                    </Typography>
-                  </TableCell>
-                  <TableCell key="payment_method" align="center">
-                    {matchPaymentMethodIcon(row['payment_method'])}
-                  </TableCell>
+                      {column.label}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </Paper>
+              </TableHead>
+              <TableBody>
+                {transactions
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => {
+                    return (
+                      <TableRow
+                        hover
+                        tabIndex={-1}
+                        key={row.id}
+                        onClick={() => {
+                          setTransactionInfo(row);
+                          handleOpenEdit();
+                        }}
+                      >
+                        <TableCell key="date">{dayjs(row['date']).format('DD MMM')}</TableCell>
+                        <TableCell key="category">
+                          <Chip
+                            variant="outlined"
+                            icon={<CategoryIcon />}
+                            label={
+                              row['category'].charAt(0).toUpperCase() +
+                              row['category'].toLowerCase().slice(1)
+                            }
+                          />
+                        </TableCell>
+                        <TableCell key="description">{row['description']}</TableCell>
+                        <TableCell key="amount" align="right">
+                          <Typography
+                            style={{
+                              color: row['type'] === 'EXPENSE' ? 'darkred' : 'darkgreen',
+                              fontWeight: 'bold',
+                            }}
+                          >
+                            {row['type'] === 'EXPENSE' ? '- ' : '+ '}$ {row['amount']}
+                          </Typography>
+                        </TableCell>
+                        <TableCell key="payment_method" align="center">
+                          {matchPaymentMethodIcon(row['payment_method'])}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[10, 25, 100]}
+            component="div"
+            count={transactions.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </div>
+      )}
+    </div>
   );
 }
