@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { Transaction } from './model';
+import { Transaction, UpdateTransactionDto } from './model';
 
 @Injectable()
 export class TransactionService {
@@ -12,5 +12,23 @@ export class TransactionService {
       ...transaction,
       userId: user.id,
     });
+  }
+
+  async updateUserTransaction(transaction: UpdateTransactionDto, id: number) {
+    return Transaction.update(
+      {
+        description: transaction.description,
+        category: transaction.category,
+        amount: transaction.amount,
+        date: transaction.date,
+        type: transaction.type,
+        paymentMethod: transaction.paymentMethod,
+      },
+      { where: { id: id } },
+    );
+  }
+
+  async removeUserTransaction(id: number) {
+    return Transaction.destroy({ where: { id: id } });
   }
 }
