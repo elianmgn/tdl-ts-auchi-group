@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Request,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
@@ -16,10 +17,23 @@ export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
   @Get(':username')
-  getUserTransactions(
+  getFilteredUserTransactions(
     @Param('username') username: string,
+    @Query('type') type: string,
+    @Query('category') category: string,
+    @Query('dateFrom') dateFrom: string,
+    @Query('dateTo') dateTo: string,
+    @Query('description') description: string,
+    @Query('paymentMethod') paymentMethod: string,
   ): Promise<Transaction[]> {
-    return this.transactionService.getUserTransactions(username);
+    return this.transactionService.getFilteredUserTransactions(username, {
+      type,
+      category,
+      dateFrom,
+      dateTo,
+      description,
+      paymentMethod,
+    });
   }
 
   @Post(':username')
