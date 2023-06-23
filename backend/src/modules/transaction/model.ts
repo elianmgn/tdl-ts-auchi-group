@@ -8,6 +8,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { User } from '../user/model';
+import { Category } from '../category/model';
 
 @Table({ tableName: 'Transaction' })
 export class Transaction extends Model<Transaction> {
@@ -23,8 +24,9 @@ export class Transaction extends Model<Transaction> {
   @Column
   description: string;
 
-  @Column
-  category: string;
+  @ForeignKey(() => Category)
+  @Column({ field: 'category_id' })
+  categoryId: number;
 
   @Column
   amount: number;
@@ -41,6 +43,9 @@ export class Transaction extends Model<Transaction> {
   @BelongsTo(() => User)
   addedByUser: User;
 
+  @BelongsTo(() => Category)
+  category: Category;
+
   @Column({ field: 'created_at' })
   createdAt: Date;
 
@@ -54,7 +59,7 @@ export class Transaction extends Model<Transaction> {
 export type UpdateTransactionDto = {
   description: string;
 
-  category: string;
+  categoryId: number;
 
   amount: number;
 

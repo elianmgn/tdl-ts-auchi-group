@@ -12,7 +12,7 @@ export class TransactionService {
     username: string,
     filters: {
       type?: string;
-      category?: string;
+      categoryId?: number;
       dateFrom?: string;
       dateTo?: string;
       description?: string;
@@ -25,8 +25,8 @@ export class TransactionService {
     if (filters.type) {
       where.type = filters.type;
     }
-    if (filters.category) {
-      where.category = filters.category;
+    if (filters.categoryId) {
+      where.categoryId = filters.categoryId;
     }
     if (filters.dateFrom && filters.dateTo) {
       where.date = {
@@ -59,7 +59,7 @@ export class TransactionService {
     return Transaction.update(
       {
         description: transaction.description,
-        category: transaction.category,
+        categoryId: transaction.categoryId,
         amount: transaction.amount,
         date: transaction.date,
         type: transaction.type,

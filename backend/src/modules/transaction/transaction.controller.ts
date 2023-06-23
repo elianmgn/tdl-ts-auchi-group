@@ -20,7 +20,7 @@ export class TransactionController {
   getFilteredUserTransactions(
     @Param('username') username: string,
     @Query('type') type: string,
-    @Query('category') category: string,
+    @Query('categoryId') categoryId: number,
     @Query('dateFrom') dateFrom: string,
     @Query('dateTo') dateTo: string,
     @Query('description') description: string,
@@ -28,7 +28,7 @@ export class TransactionController {
   ): Promise<Transaction[]> {
     return this.transactionService.getFilteredUserTransactions(username, {
       type,
-      category,
+      categoryId,
       dateFrom,
       dateTo,
       description,

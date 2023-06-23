@@ -7,6 +7,7 @@ import * as express from 'express';
 import { database, paths, server } from './config';
 import { User } from './modules/user/model';
 import { Transaction } from './modules/transaction/model';
+import { Category } from './modules/category/model';
 
 export class ServerSetup {
   private http!: HttpServer;
@@ -41,7 +42,7 @@ export class ServerSetup {
       username: database.username,
       password: database.password,
       sync: { force: database.sync.force },
-      models: [User, Transaction], // List of sequelize models
+      models: [User, Transaction, Category], // List of sequelize models
     });
 
     this.umzug = new Umzug({
