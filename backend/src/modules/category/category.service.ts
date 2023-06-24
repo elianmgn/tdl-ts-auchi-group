@@ -4,6 +4,10 @@ import { Op } from 'sequelize';
 
 @Injectable()
 export class CategoryService {
+  async findCategoryById(id: number) {
+    return Category.findByPk(id);
+  }
+
   async getFilteredCategories(filters: {
     type?: string;
     dateFrom?: string;

@@ -11,10 +11,14 @@ import {
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { Transaction } from './model';
+import { CategoryService } from '../category/category.service';
 
 @Controller('transactions')
 export class TransactionController {
-  constructor(private readonly transactionService: TransactionService) {}
+  constructor(
+    private readonly transactionService: TransactionService,
+    private readonly categoryService: CategoryService,
+  ) {}
 
   @Get(':username')
   async getFilteredUserTransactions(
@@ -37,8 +41,16 @@ export class TransactionController {
   }
 
   @Post(':username')
-  addUserTransaction(@Param('username') username: string, @Request() req) {
+  async addUserTransaction(
+    @Param('username') username: string,
+    @Request() req,
+  ) {
     const transaction = req.body;
+    const categoryId = parseInt(transaction.category);
+    transaction['categoryId'] = parseInt(transaction.category);
+    transaction['category'] = await this.categoryService.findCategoryById(
+      categoryId,
+    );
     transaction['paymentMethod'] = transaction.payment_method;
     return this.transactionService.addUserTransaction(username, transaction);
   }

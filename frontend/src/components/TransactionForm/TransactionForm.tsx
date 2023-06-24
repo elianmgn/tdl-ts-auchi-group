@@ -41,17 +41,15 @@ import dayjs from 'dayjs';
 import TransactionEntity from '../../models/TransactionEntity';
 import CategoryEntity from '../../models/CategoryEntity';
 
-const categorySchema = string().refine((value: unknown) => {
-  return typeof value === 'object' && value !== null && 'name' in value;
-}, {
-  message: 'Category is required',
-});
-
 const formSchema = object({
   description: string()
     .nonempty('Name is required')
     .max(32, 'Name must be less than 32 characters'),
-  category: categorySchema,
+  category: string().refine((value: unknown) => {
+    return typeof value === 'string' && value !== '';
+  }, {
+    message: 'Category is required',
+  }),
   type: string().nonempty('Type is required'),
   amount: number({
     required_error: 'Amount is required',
@@ -81,12 +79,11 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
     reset,
     handleSubmit,
   } = useForm<RegisterInput>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema)
   });
 
   const resetValues = () => {
     reset();
-    setValue('category', '');
     setValue('payment_method', 'CASH');
     setValue('type', 'INCOME');
     setValue('date', dayjs().format('YYYY-MM-DD').toString());
@@ -156,7 +153,11 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
     const fetchData = async () => {
       try {
         const categoriesData = await fetchCategories();
-        setCategories(categoriesData); 
+        const formattedCategories = categoriesData.map((category: typeof CategoryEntity) => ({
+          id: category.id?.toString(),
+          name: category.name,
+        }));
+        setCategories(formattedCategories);
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
@@ -179,9 +180,14 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
   
 
   const onSubmitHandler: SubmitHandler<RegisterInput> = (values) => {
-    console.log('Values:');
-    postNewTransaction(values);
-    console.log(values);
+    const selectedCategory = categories.find((category) => category.id !== undefined && category.id.toString() === values.category);
+
+    if (selectedCategory) {
+      values.category = selectedCategory.id?.toString() || '';;
+      postNewTransaction(values);
+    } else {
+      setAlertInfo({ open: true, error: true, message: 'Please select a valid category.' });
+    }
   };
 
   return (
@@ -296,7 +302,7 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
                 {...register('category')}
               >
                 {categories.map((category: typeof CategoryEntity) => ( 
-                  <MenuItem key={category.id} value={category.id}>
+                  <MenuItem key={category.id} value={category.id?.toString()}>
                     {category.name}
                   </MenuItem>
                 ))}
