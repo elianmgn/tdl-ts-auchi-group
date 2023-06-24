@@ -15,7 +15,7 @@ import budgetifyLogo from '../../assets/images/logo.svg';
 import './Header.css';
 
 
-const pages = ['Dashboard', 'Transactions', 'Reports', 'Budgets'];
+const pages = ['Dashboard', 'Transactions', 'Categories', 'Reports', 'Budgets'];
 const settings = ['Profile', 'Account', 'Logout'];
 
 export default function Header() {

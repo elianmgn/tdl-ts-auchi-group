@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './TransactionForm.css';
+import './CategoryForm.css';
 import {
   Box,
   TextField,
@@ -37,7 +37,7 @@ type RegisterInput = TypeOf<typeof formSchema>;
 interface ComponenteProps {
   open: boolean;
   handleClose: () => void;
-  categoryInfo?: CategoryEntity | null;
+  categoryInfo?: typeof CategoryEntity | null;
 }
 
 const CategoryForm: React.FC<ComponenteProps> = ({ open, handleClose, categoryInfo }) => {
@@ -139,7 +139,7 @@ const CategoryForm: React.FC<ComponenteProps> = ({ open, handleClose, categoryIn
         </Alert>
       </Snackbar>
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle>Transaction</DialogTitle>
+        <DialogTitle>Category</DialogTitle>
         <DialogContent>
           <Box
             component="form"

@@ -1,7 +1,6 @@
 import * as React from 'react';
-import './TransactionList.css';
+import './CategoryList.css';
 import {
-  Chip,
   Table,
   TableBody,
   TableCell,
@@ -12,13 +11,10 @@ import {
   CircularProgress,
 } from '@mui/material';
 
-import TransactionEntity from '../../models/TransactionEntity';
 import { Typography } from '@mui/material';
 
-import { matchPaymentMethodIcon } from '../../utils/TransactionIcons';
 import dayjs from 'dayjs';
 
-import CategoryIcon from '@mui/icons-material/Category';
 import CategoryForm from './CategoryForm';
 import CategoryEntity from '../../models/CategoryEntity';
 
@@ -45,11 +41,11 @@ const columns: readonly Column[] = [
 export default function StickyHeadTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [categories, setCategories] = React.useState<CategoryEntity[]>([]);
+  const [categories, setCategories] = React.useState<typeof CategoryEntity[]>([]);
 
   const [isLoading, setIsLoading] = React.useState(true);
   const [openEdit, setOpenEdit] = React.useState(false);
-  const [categoryInfo, setCategoryInfo] = React.useState<CategoryEntity | null>(null);
+  const [categoryInfo, setCategoryInfo] = React.useState<typeof CategoryEntity | null>(null);
 
   const handleOpenEdit = () => {
     setOpenEdit(true);
@@ -129,7 +125,7 @@ export default function StickyHeadTable() {
                           handleOpenEdit();
                         }}
                       >
-                        <TableCell key="createdAt">{dayjs(row['date']).format('DD MMM')}</TableCell>
+                        <TableCell key="createdAt">{dayjs(row['createdAt']).format('DD MMM')}</TableCell>
                         <TableCell key="name">{row['name']}</TableCell>
                         <TableCell key="description">{row['description']}</TableCell>
                         <TableCell key="type" align="right">

@@ -85,6 +85,7 @@ export default function StickyHeadTable() {
       },
     });
     const transactionsData = await response.json();
+    console.log(transactionsData);
     setTrasactions(transactionsData);
   };
 
@@ -144,8 +145,8 @@ export default function StickyHeadTable() {
                             variant="outlined"
                             icon={<CategoryIcon />}
                             label={
-                              row['category'].charAt(0).toUpperCase() +
-                              row['category'].toLowerCase().slice(1)
+                              row['category']?.name.charAt(0).toUpperCase() +
+                              row['category']?.name.toLowerCase().slice(1)
                             }
                           />
                         </TableCell>
