@@ -27,6 +27,26 @@ export class CategoryController {
     });
   }
 
+  @Get('transaction-summary')
+  async getTransactionSummaryByCategory(
+    @Query('dateFrom') dateFrom: string,
+    @Query('dateTo') dateTo: string,
+  ): Promise<any> {
+    const categoriesSummaryMap =
+      await this.categoryService.getTransactionSummaryByCategory({
+        dateFrom,
+        dateTo,
+      });
+
+    const categoriesSummaryJson = {};
+
+    categoriesSummaryMap.forEach((value, key) => {
+      categoriesSummaryJson[key] = value;
+    });
+
+    return JSON.stringify(categoriesSummaryJson);
+  }
+
   @Post()
   addCategory(@Request() req) {
     const category = req.body;

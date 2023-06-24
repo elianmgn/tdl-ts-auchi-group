@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Category, UpdateCategoryDto } from './model';
 import { Op } from 'sequelize';
+import { Transaction } from '../transaction/model';
 
 @Injectable()
 export class CategoryService {
@@ -15,7 +16,7 @@ export class CategoryService {
     const where: any = {};
 
     if (filters.dateFrom && filters.dateTo) {
-      where.date = {
+      where.createdAt = {
         [Op.between]: [filters.dateFrom, filters.dateTo],
       };
     }
@@ -25,6 +26,52 @@ export class CategoryService {
     });
 
     return categories;
+  }
+
+  async getTransactionSummaryByCategory(filters: {
+    dateFrom?: string;
+    dateTo?: string;
+  }): Promise<Map<string, { amount: number; balance: number }>> {
+    const where: any = {};
+
+    if (filters.dateFrom && filters.dateTo) {
+      where.createdAt = {
+        [Op.between]: [filters.dateFrom, filters.dateTo],
+      };
+    }
+
+    const categories = await Category.findAll({
+      where,
+      include: [
+        {
+          model: Transaction,
+          as: 'transactions',
+          required: false,
+        },
+      ],
+    });
+
+    const categoriesSummary = new Map<
+      string,
+      { amount: number; balance: number }
+    >();
+
+    for (const category of categories) {
+      let balance = 0;
+      for (const categoryTransaction of category.transactions) {
+        if (categoryTransaction.type == 'INCOME') {
+          balance += categoryTransaction.amount;
+        } else {
+          balance -= categoryTransaction.amount;
+        }
+      }
+      categoriesSummary.set(category.name, {
+        amount: category.transactions.length,
+        balance,
+      });
+    }
+
+    return categoriesSummary;
   }
 
   async addCategory(category: Category) {
