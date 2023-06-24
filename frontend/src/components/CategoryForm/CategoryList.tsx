@@ -11,15 +11,13 @@ import {
   CircularProgress,
 } from '@mui/material';
 
-import { Typography } from '@mui/material';
-
 import dayjs from 'dayjs';
 
 import CategoryForm from './CategoryForm';
 import CategoryEntity from '../../models/CategoryEntity';
 
 interface Column {
-  id: 'description' | 'name' | 'createdAt' | 'type';
+  id: 'description' | 'name' | 'createdAt';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -35,7 +33,6 @@ const columns: readonly Column[] = [
   },
   { id: 'name', label: 'Name', minWidth: 50 },
   { id: 'description', label: 'Description', minWidth: 50 },
-  { id: 'type', label: 'Type', minWidth: 50 },
 ];
 
 export default function StickyHeadTable() {
@@ -128,16 +125,6 @@ export default function StickyHeadTable() {
                         <TableCell key="createdAt">{dayjs(row['createdAt']).format('DD MMM')}</TableCell>
                         <TableCell key="name">{row['name']}</TableCell>
                         <TableCell key="description">{row['description']}</TableCell>
-                        <TableCell key="type" align="right">
-                          <Typography
-                            style={{
-                              color: row['type'] === 'EXPENSE' ? 'darkred' : 'darkgreen',
-                              fontWeight: 'bold',
-                            }}
-                          >
-                            {row['type'] === 'EXPENSE' ? '- ' : '+ '}$ 
-                          </Typography>
-                        </TableCell>
                       </TableRow>
                     );
                   })}

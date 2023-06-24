@@ -21,9 +21,6 @@ export class Category extends Model<Category> {
   @Column({ unique: true })
   name: string;
 
-  @Column
-  type: string;
-
   @HasMany(() => Transaction)
   transactions: Transaction[];
 
@@ -41,6 +38,4 @@ export type UpdateCategoryDto = {
   name: string;
 
   description: string;
-
-  type: string;
 };

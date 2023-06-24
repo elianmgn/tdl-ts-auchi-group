@@ -16,9 +16,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      type: {
-        type: Sequelize.ENUM('INCOME', 'EXPENSE'),
-      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

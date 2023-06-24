@@ -7,7 +7,6 @@ module.exports = {
         id: 1,
         name: 'Entertainment',
         description: 'Activities and events for leisure and entertainment',
-        type: 'EXPENSE',
         created_at: new Date(),
         updated_at: new Date(),
       },

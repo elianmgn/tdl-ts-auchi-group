@@ -3,8 +3,6 @@ import './CategoryForm.css';
 import {
   Box,
   TextField,
-  ToggleButton,
-  ToggleButtonGroup,
   Alert,
   Snackbar,
   Button,
@@ -13,8 +11,6 @@ import {
   DialogContent,
   DialogTitle,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
 
 import { LoadingButton } from '@mui/lab';
 
@@ -29,7 +25,6 @@ const formSchema = object({
     .nonempty('Name is required')
     .max(32, 'Name must be less than 32 characters'),
   description: string().nonempty('Description is required'),
-  type: string().nonempty('Type is required'),
 });
 
 type RegisterInput = TypeOf<typeof formSchema>;
@@ -46,7 +41,6 @@ const CategoryForm: React.FC<ComponenteProps> = ({ open, handleClose, categoryIn
 
   const {
     register,
-    watch,
     setValue,
     formState: { errors },
     reset,
@@ -57,7 +51,6 @@ const CategoryForm: React.FC<ComponenteProps> = ({ open, handleClose, categoryIn
 
   const resetValues = () => {
     reset();
-    setValue('type', 'INCOME');
   };
 
   const handleCloseAlert = (event?: React.SyntheticEvent | Event, reason?: string) => {
@@ -113,7 +106,6 @@ const CategoryForm: React.FC<ComponenteProps> = ({ open, handleClose, categoryIn
     if (categoryInfo) {
       setValue('name', categoryInfo.name);
       setValue('description', categoryInfo.description);
-      setValue('type', categoryInfo.type);
     } else {
       resetValues();
     }
@@ -167,29 +159,6 @@ const CategoryForm: React.FC<ComponenteProps> = ({ open, handleClose, categoryIn
               helperText={errors['description'] ? errors['description'].message : ''}
               {...register('description')}
             />
-
-            <div className="type-container">
-              {/* Type Input */}
-              <ToggleButtonGroup
-                color="primary"
-                value={watch('type')}
-                exclusive
-                onChange={(_: React.MouseEvent<HTMLElement>, value: string) => {
-                  if (value !== null) {
-                    setValue('type', value);
-                  }
-                }}
-                aria-label="type"
-                className="toggle-button-group"
-              >
-                <ToggleButton value="INCOME" aria-label="income">
-                  <AddIcon />
-                </ToggleButton>
-                <ToggleButton value="EXPENSE" aria-label="expense">
-                  <RemoveIcon />
-                </ToggleButton>
-              </ToggleButtonGroup>
-            </div>
           </Box>
         </DialogContent>
         <DialogActions>
