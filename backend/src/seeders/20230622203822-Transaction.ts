@@ -7,7 +7,7 @@ module.exports = {
         id: 1,
         user_id: 1,
         description: 'Entradas Taylor',
-        category: 'ENTERTAINMENT',
+        category_id: '1',
         amount: 40000,
         date: new Date(),
         type: 'EXPENSE',

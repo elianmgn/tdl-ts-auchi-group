@@ -39,13 +39,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
 
 import TransactionEntity from '../../models/TransactionEntity';
-import { TRANSACTIONS_CATEGORIES } from '../../utils/TransactionEnums';
+import CategoryEntity from '../../models/CategoryEntity';
 
 const formSchema = object({
   description: string()
     .nonempty('Name is required')
     .max(32, 'Name must be less than 32 characters'),
-  category: string().nonempty('Category is required'),
+  category: string().refine((value: unknown) => {
+    return typeof value === 'string' && value !== '';
+  }, {
+    message: 'Category is required',
+  }),
   type: string().nonempty('Type is required'),
   amount: number({
     required_error: 'Amount is required',
@@ -65,6 +69,7 @@ interface ComponenteProps {
 const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transactionInfo }) => {
   const [loading, setLoading] = useState(false);
   const [alertInfo, setAlertInfo] = useState({ open: false, error: false, message: '' });
+  const [categories, setCategories] = useState<typeof CategoryEntity[]>([]); 
 
   const {
     register,
@@ -74,12 +79,11 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
     reset,
     handleSubmit,
   } = useForm<RegisterInput>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema)
   });
 
   const resetValues = () => {
     reset();
-    setValue('category', '');
     setValue('payment_method', 'CASH');
     setValue('type', 'INCOME');
     setValue('date', dayjs().format('YYYY-MM-DD').toString());
@@ -134,24 +138,56 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
     }
   }
 
+  async function fetchCategories() {
+    const response = await fetch(`http://localhost:8080/categories`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const categoriesData = await response.json();
+    return categoriesData;
+  };
+
   useEffect(() => {
-    if (transactionInfo) {
-      setValue('description', transactionInfo.description);
-      setValue('category', transactionInfo.category);
-      setValue('amount', transactionInfo.amount);
-      setValue('date', transactionInfo.date);
-      setValue('type', transactionInfo.type);
-      setValue('payment_method', transactionInfo.payment_method);
-    } else {
-      resetValues();
-    }
-    setLoading(false);
+    const fetchData = async () => {
+      try {
+        const categoriesData = await fetchCategories();
+        const formattedCategories = categoriesData.map((category: typeof CategoryEntity) => ({
+          id: category.id?.toString(),
+          name: category.name,
+        }));
+        setCategories(formattedCategories);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+  
+      if (transactionInfo) {
+        setValue('description', transactionInfo.description);
+        setValue('category', transactionInfo.category?.id?.toString() ?? '');
+        setValue('amount', transactionInfo.amount);
+        setValue('date', transactionInfo.date);
+        setValue('type', transactionInfo.type);
+        setValue('payment_method', transactionInfo.payment_method);
+      } else {
+        resetValues();
+      }
+      setLoading(false);
+    };
+  
+    fetchData();
   }, [open]);
+  
 
   const onSubmitHandler: SubmitHandler<RegisterInput> = (values) => {
-    console.log('Values:');
-    postNewTransaction(values);
-    console.log(values);
+    const selectedCategory = categories.find((category) => category.id !== undefined && category.id.toString() === values.category);
+
+    if (selectedCategory) {
+      values.category = selectedCategory.id?.toString() || '';;
+      postNewTransaction(values);
+    } else {
+      setAlertInfo({ open: true, error: true, message: 'Please select a valid category.' });
+    }
   };
 
   return (
@@ -265,9 +301,9 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
                 defaultValue=""
                 {...register('category')}
               >
-                {TRANSACTIONS_CATEGORIES.map((category: string) => (
-                  <MenuItem key={category} value={category}>
-                    {category.charAt(0).toUpperCase() + category.toLowerCase().slice(1)}
+                {categories.map((category: typeof CategoryEntity) => ( 
+                  <MenuItem key={category.id} value={category.id?.toString()}>
+                    {category.name}
                   </MenuItem>
                 ))}
               </Select>

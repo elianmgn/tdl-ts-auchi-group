@@ -1,7 +1,6 @@
 import * as React from 'react';
-import './TransactionList.css';
+import './CategoryList.css';
 import {
-  Chip,
   Table,
   TableBody,
   TableCell,
@@ -12,17 +11,13 @@ import {
   CircularProgress,
 } from '@mui/material';
 
-import TransactionEntity from '../../models/TransactionEntity';
-import { Typography } from '@mui/material';
-
-import { matchPaymentMethodIcon } from '../../utils/TransactionIcons';
 import dayjs from 'dayjs';
 
-import CategoryIcon from '@mui/icons-material/Category';
-import TransactionForm from './TransactionForm';
+import CategoryForm from './CategoryForm';
+import CategoryEntity from '../../models/CategoryEntity';
 
 interface Column {
-  id: 'description' | 'category' | 'date' | 'amount' | 'payment_method';
+  id: 'description' | 'name' | 'createdAt';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -32,33 +27,22 @@ interface Column {
 
 const columns: readonly Column[] = [
   {
-    id: 'date',
+    id: 'createdAt',
     label: 'Date',
     width: 50,
   },
-  { id: 'category', label: 'Category', width: 5 },
+  { id: 'name', label: 'Name', minWidth: 50 },
   { id: 'description', label: 'Description', minWidth: 50 },
-  {
-    id: 'amount',
-    label: 'Amount',
-    align: 'right',
-    format: (value: number) => value.toFixed(2),
-  },
-  {
-    id: 'payment_method',
-    label: 'Method',
-    width: 5,
-  },
 ];
 
 export default function StickyHeadTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [transactions, setTrasactions] = React.useState<TransactionEntity[]>([]);
+  const [categories, setCategories] = React.useState<typeof CategoryEntity[]>([]);
 
   const [isLoading, setIsLoading] = React.useState(true);
   const [openEdit, setOpenEdit] = React.useState(false);
-  const [transactionInfo, setTransactionInfo] = React.useState<TransactionEntity | null>(null);
+  const [categoryInfo, setCategoryInfo] = React.useState<typeof CategoryEntity | null>(null);
 
   const handleOpenEdit = () => {
     setOpenEdit(true);
@@ -77,25 +61,24 @@ export default function StickyHeadTable() {
     setPage(0);
   };
 
-  const fetchTransactions = async () => {
-    const response = await fetch(`http://localhost:8080/transactions/admin`, {
+  const fetchCategories = async () => {
+    const response = await fetch(`http://localhost:8080/categories`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
     });
-    const transactionsData = await response.json();
-    console.log(transactionsData);
-    setTrasactions(transactionsData);
+    const categoriesData = await response.json();
+    setCategories(categoriesData);
   };
 
   React.useEffect(() => {
-    fetchTransactions();
+    fetchCategories();
   }, []);
 
   React.useEffect(() => {
     setIsLoading(false);
-  }, [transactions]);
+  }, [categories]);
 
   return (
     <div style={{ width: '100%', overflow: 'hidden' }}>
@@ -105,10 +88,10 @@ export default function StickyHeadTable() {
         </div>
       ) : (
         <div>
-          <TransactionForm
+          <CategoryForm
             open={openEdit}
             handleClose={handleCloseEdit}
-            transactionInfo={transactionInfo}
+            categoryInfo={categoryInfo}
           />
           <TableContainer sx={{ maxHeight: 440 }}>
             <Table stickyHeader aria-label="sticky table">
@@ -126,7 +109,7 @@ export default function StickyHeadTable() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {transactions
+                {categories
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     return (
@@ -135,35 +118,13 @@ export default function StickyHeadTable() {
                         tabIndex={-1}
                         key={row.id}
                         onClick={() => {
-                          setTransactionInfo(row);
+                          setCategoryInfo(row);
                           handleOpenEdit();
                         }}
                       >
-                        <TableCell key="date">{dayjs(row['date']).format('DD MMM')}</TableCell>
-                        <TableCell key="category">
-                          <Chip
-                            variant="outlined"
-                            icon={<CategoryIcon />}
-                            label={
-                              row['category']?.name.charAt(0).toUpperCase() +
-                              row['category']?.name.toLowerCase().slice(1)
-                            }
-                          />
-                        </TableCell>
+                        <TableCell key="createdAt">{dayjs(row['createdAt']).format('DD MMM')}</TableCell>
+                        <TableCell key="name">{row['name']}</TableCell>
                         <TableCell key="description">{row['description']}</TableCell>
-                        <TableCell key="amount" align="right">
-                          <Typography
-                            style={{
-                              color: row['type'] === 'EXPENSE' ? 'darkred' : 'darkgreen',
-                              fontWeight: 'bold',
-                            }}
-                          >
-                            {row['type'] === 'EXPENSE' ? '- ' : '+ '}$ {row['amount']}
-                          </Typography>
-                        </TableCell>
-                        <TableCell key="payment_method" align="center">
-                          {matchPaymentMethodIcon(row['payment_method'])}
-                        </TableCell>
                       </TableRow>
                     );
                   })}
@@ -173,7 +134,7 @@ export default function StickyHeadTable() {
           <TablePagination
             rowsPerPageOptions={[10, 25, 100]}
             component="div"
-            count={transactions.length}
+            count={categories.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

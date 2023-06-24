@@ -11,16 +11,20 @@ import {
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { Transaction } from './model';
+import { CategoryService } from '../category/category.service';
 
 @Controller('transactions')
 export class TransactionController {
-  constructor(private readonly transactionService: TransactionService) {}
+  constructor(
+    private readonly transactionService: TransactionService,
+    private readonly categoryService: CategoryService,
+  ) {}
 
   @Get(':username')
-  getFilteredUserTransactions(
+  async getFilteredUserTransactions(
     @Param('username') username: string,
     @Query('type') type: string,
-    @Query('category') category: string,
+    @Query('categoryId') categoryId: number,
     @Query('dateFrom') dateFrom: string,
     @Query('dateTo') dateTo: string,
     @Query('description') description: string,
@@ -28,7 +32,7 @@ export class TransactionController {
   ): Promise<Transaction[]> {
     return this.transactionService.getFilteredUserTransactions(username, {
       type,
-      category,
+      categoryId,
       dateFrom,
       dateTo,
       description,
@@ -37,8 +41,16 @@ export class TransactionController {
   }
 
   @Post(':username')
-  addUserTransaction(@Param('username') username: string, @Request() req) {
+  async addUserTransaction(
+    @Param('username') username: string,
+    @Request() req,
+  ) {
     const transaction = req.body;
+    const categoryId = parseInt(transaction.category);
+    transaction['categoryId'] = parseInt(transaction.category);
+    transaction['category'] = await this.categoryService.findCategoryById(
+      categoryId,
+    );
     transaction['paymentMethod'] = transaction.payment_method;
     return this.transactionService.addUserTransaction(username, transaction);
   }
