@@ -1,9 +1,10 @@
 import React from 'react';
+import AccountBalance from '../components/Dashboard/AccountBalance';
 
 export default function DashboardPage() {
-    return(
-        <div>
-            <h1>Dashboard</h1>
-        </div>
-    )
+  return(
+    <div>
+      <AccountBalance />
+    </div>
+  )
 } 
