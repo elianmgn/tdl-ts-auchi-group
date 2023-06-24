@@ -17,7 +17,7 @@ export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
   @Get(':username')
-  getFilteredUserTransactions(
+  async getFilteredUserTransactions(
     @Param('username') username: string,
     @Query('type') type: string,
     @Query('categoryId') categoryId: number,

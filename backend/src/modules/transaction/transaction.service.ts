@@ -3,6 +3,7 @@ import { UserService } from '../user/user.service';
 import { User } from '../user/model';
 import { Transaction, UpdateTransactionDto } from './model';
 import { Op } from 'sequelize';
+import { Category } from '../category/model';
 
 @Injectable()
 export class TransactionService {
@@ -42,6 +43,13 @@ export class TransactionService {
 
     const transactions = await Transaction.findAll({
       where,
+      include: [
+        {
+          model: Category,
+          as: 'category',
+          required: false,
+        },
+      ],
     });
 
     return transactions;
