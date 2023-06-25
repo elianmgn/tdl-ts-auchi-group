@@ -17,6 +17,9 @@ import {
   MenuItem,
 } from '@mui/material';
 
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 import TransactionEntity from '../../models/TransactionEntity';
 import { Typography } from '@mui/material';
 
@@ -27,7 +30,7 @@ import CategoryIcon from '@mui/icons-material/Category';
 import TransactionForm from './TransactionForm';
 
 interface Column {
-  id: 'description' | 'category' | 'date' | 'amount' | 'payment_method';
+  id: 'description' | 'category' | 'date' | 'amount' | 'paymentMethod';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -50,7 +53,7 @@ const columns: readonly Column[] = [
     format: (value: number) => value.toFixed(2),
   },
   {
-    id: 'payment_method',
+    id: 'paymentMethod',
     label: 'Method',
     width: 5,
   },
@@ -97,6 +100,23 @@ export default function StickyHeadTable() {
     setPage(0);
   };
 
+  const handleTransactionDelete = (id: number) => {
+    fetch(`http://localhost:8080/transactions/${id}`, {
+    method: 'DELETE',
+    })
+      .then((response) => {
+        if (response.ok) {
+          fetchTransactions();
+          console.log('Transacción eliminada');
+        } else {
+          console.error('Error al eliminar la transacción');
+        }
+      })
+      .catch((error) => {
+        console.error('Error de red', error);
+      });
+  };
+
   const fetchTransactions = async () => {
     const params = new URLSearchParams(filters).toString();
     const url = `http://localhost:8080/transactions/admin?${params}`
@@ -106,8 +126,7 @@ export default function StickyHeadTable() {
         'Content-Type': 'application/json',
       },
     });
-    const transactionsData = await response.json();
-    console.log(transactionsData);
+    const transactionsData = await response.json();;
     setTrasactions(transactionsData);
   };
 
@@ -247,9 +266,14 @@ export default function StickyHeadTable() {
                             {row['type'] === 'EXPENSE' ? '- ' : '+ '}$ {row['amount']}
                           </Typography>
                         </TableCell>
-                        <TableCell key="payment_method" align="center">
-                          {matchPaymentMethodIcon(row['payment_method'])}
+                        <TableCell key="paymentMethod" align="center">
+                          {matchPaymentMethodIcon(row['paymentMethod'])}
                         </TableCell>
+                        <TableCell key="delete" align="center">
+                          <IconButton onClick={() => row['id'] && handleTransactionDelete(row['id'])}>
+                            <DeleteIcon />
+                          </IconButton>
+                      </TableCell>
                       </TableRow>
                     );
                   })}

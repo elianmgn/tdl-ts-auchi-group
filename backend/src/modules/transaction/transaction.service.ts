@@ -37,15 +37,10 @@ export class TransactionService {
     if (filters.description) {
       where.description = filters.description;
     }
-    console.log(filters.paymentMethod);
-    console.log(filters);
 
     if (filters.paymentMethod && filters.paymentMethod != 'ALL') {
       where.paymentMethod = filters.paymentMethod;
     }
-
-    console.log(filters.paymentMethod);
-    console.log(filters);
 
     const transactions = await Transaction.findAll({
       where,

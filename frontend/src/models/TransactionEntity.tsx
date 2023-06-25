@@ -8,7 +8,7 @@ type TransactionEntity = {
   amount: number; // Amount of transaction
   date: string; // Date of transaction. Format: YYYY-MM-DD
   type: string; // Type of transaction (Income | Expense)
-  payment_method: string; // Payment method (Cash | Credit Card | Debit Card | Check | Other)
+  paymentMethod: string; // Payment method (Cash | Credit Card | Debit Card | Check | Other)
 };
 
 export default TransactionEntity;
