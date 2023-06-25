@@ -12,6 +12,9 @@ import {
   TextField,
 } from '@mui/material';
 
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 import dayjs from 'dayjs';
 
 import CategoryForm from './CategoryForm';
@@ -72,6 +75,23 @@ export default function StickyHeadTable() {
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
+  };
+
+  const handleCategoryDelete = (id: number) => {
+    fetch(`http://localhost:8080/categories/${id}`, {
+    method: 'DELETE',
+    })
+      .then((response) => {
+        if (response.ok) {
+          fetchCategories();
+          console.log('Categoría eliminada');
+        } else {
+          console.error('Error al eliminar la categoría');
+        }
+      })
+      .catch((error) => {
+        console.error('Error de red', error);
+      });
   };
 
   const fetchCategories = async () => {
@@ -166,6 +186,11 @@ export default function StickyHeadTable() {
                         <TableCell key="createdAt">{dayjs(row['createdAt']).format('DD MMM')}</TableCell>
                         <TableCell key="name">{row['name']}</TableCell>
                         <TableCell key="description">{row['description']}</TableCell>
+                        <TableCell key="delete" align="center">
+                          <IconButton onClick={() => row['id'] && handleCategoryDelete(row['id'])}>
+                            <DeleteIcon />
+                          </IconButton>
+                      </TableCell>
                       </TableRow>
                     );
                   })}
