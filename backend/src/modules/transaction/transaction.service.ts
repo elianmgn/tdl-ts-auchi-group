@@ -23,7 +23,7 @@ export class TransactionService {
     const userWithId = await this.userService.findOneUserByUsername(username);
     const where: any = { userId: userWithId.id };
 
-    if (filters.type) {
+    if (filters.type && filters.type != 'ALL') {
       where.type = filters.type;
     }
     if (filters.categoryId) {
@@ -37,9 +37,15 @@ export class TransactionService {
     if (filters.description) {
       where.description = filters.description;
     }
-    if (filters.paymentMethod) {
+    console.log(filters.paymentMethod);
+    console.log(filters);
+
+    if (filters.paymentMethod && filters.paymentMethod != 'ALL') {
       where.paymentMethod = filters.paymentMethod;
     }
+
+    console.log(filters.paymentMethod);
+    console.log(filters);
 
     const transactions = await Transaction.findAll({
       where,

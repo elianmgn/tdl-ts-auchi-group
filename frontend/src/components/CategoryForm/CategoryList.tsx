@@ -1,6 +1,7 @@
 import * as React from 'react';
 import './CategoryList.css';
 import {
+  CircularProgress,
   Table,
   TableBody,
   TableCell,
@@ -8,7 +9,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  CircularProgress,
+  TextField,
 } from '@mui/material';
 
 import dayjs from 'dayjs';
@@ -44,6 +45,18 @@ export default function StickyHeadTable() {
   const [openEdit, setOpenEdit] = React.useState(false);
   const [categoryInfo, setCategoryInfo] = React.useState<typeof CategoryEntity | null>(null);
 
+  const [filters, setFilters] = React.useState({
+    dateFrom: '',
+    dateTo: '',
+  });
+
+  const handleFilterChange = (filterName: string, value: string) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [filterName]: value,
+    }));
+  };
+
   const handleOpenEdit = () => {
     setOpenEdit(true);
   };
@@ -62,7 +75,9 @@ export default function StickyHeadTable() {
   };
 
   const fetchCategories = async () => {
-    const response = await fetch(`http://localhost:8080/categories`, {
+    const params = new URLSearchParams(filters).toString();
+    const url = `http://localhost:8080/categories/?${params}`
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -74,7 +89,7 @@ export default function StickyHeadTable() {
 
   React.useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [filters]);
 
   React.useEffect(() => {
     setIsLoading(false);
@@ -88,6 +103,32 @@ export default function StickyHeadTable() {
         </div>
       ) : (
         <div>
+          {/* Controles de filtrado */}
+          <div style={{ marginTop: '35px', marginLeft: '20px' }}>
+            <TextField
+              label="Fecha de Inicio"
+              type="date"
+              value={filters.dateFrom}
+              onChange={(event) => handleFilterChange('dateFrom', event.target.value)}
+              InputLabelProps={{
+                shrink: true,
+                style: { marginTop: '-10px' },
+              }}
+            />
+
+            <TextField
+              label="Fecha de Fin"
+              type="date"
+              value={filters.dateTo}
+              onChange={(event) => handleFilterChange('dateTo', event.target.value)}
+              InputLabelProps={{
+                shrink: true,
+                style: { marginTop: '-10px' },
+              }}
+            />
+
+          </div>
+
           <CategoryForm
             open={openEdit}
             handleClose={handleCloseEdit}
