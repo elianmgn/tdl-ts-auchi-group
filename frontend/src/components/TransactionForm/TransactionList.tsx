@@ -1,6 +1,7 @@
 import * as React from 'react';
 import './TransactionList.css';
 import {
+  CircularProgress,
   Chip,
   Table,
   TableBody,
@@ -9,7 +10,11 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  CircularProgress,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 
 import TransactionEntity from '../../models/TransactionEntity';
@@ -60,6 +65,21 @@ export default function StickyHeadTable() {
   const [openEdit, setOpenEdit] = React.useState(false);
   const [transactionInfo, setTransactionInfo] = React.useState<TransactionEntity | null>(null);
 
+  const [filters, setFilters] = React.useState({
+    type: 'ALL',
+    paymentMethod: 'ALL',
+    dateFrom: '',
+    dateTo: '',
+    description: '',
+  });
+
+  const handleFilterChange = (filterName: string, value: string) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [filterName]: value,
+    }));
+  };
+
   const handleOpenEdit = () => {
     setOpenEdit(true);
   };
@@ -78,7 +98,9 @@ export default function StickyHeadTable() {
   };
 
   const fetchTransactions = async () => {
-    const response = await fetch(`http://localhost:8080/transactions/admin`, {
+    const params = new URLSearchParams(filters).toString();
+    const url = `http://localhost:8080/transactions/admin?${params}`
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -91,7 +113,7 @@ export default function StickyHeadTable() {
 
   React.useEffect(() => {
     fetchTransactions();
-  }, []);
+  }, [filters]);
 
   React.useEffect(() => {
     setIsLoading(false);
@@ -105,6 +127,70 @@ export default function StickyHeadTable() {
         </div>
       ) : (
         <div>
+          {/* Controles de filtrado */}
+          <div style={{ marginTop: '35px' }}>
+            <FormControl style={{ width: '130px', marginLeft: '20px' }}>
+              <InputLabel style={{ transform: 'translate(50px, -20px)', fontSize: '12px', fontWeight: 'bold' }}
+              >
+                Tipo
+              </InputLabel>
+              <Select
+                value={filters.type}
+                onChange={(event) => handleFilterChange('type', event.target.value)}
+              >
+                <MenuItem value="ALL">Todos</MenuItem>
+                <MenuItem value="INCOME">Ingreso</MenuItem>
+                <MenuItem value="EXPENSE">Egreso</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl style={{ width: '130px' }}>
+              <InputLabel style={{ transform: 'translate(20px, -20px)', fontSize: '12px', fontWeight: 'bold' }}
+              >
+                Método de Pago
+              </InputLabel>
+              <Select
+                value={filters.paymentMethod}
+                onChange={(event) => handleFilterChange('paymentMethod', event.target.value)}
+              >
+                <MenuItem value="ALL">Todos</MenuItem>
+                <MenuItem value="CASH">Efectivo</MenuItem>
+                <MenuItem value="CREDIT-CARD">Tarjeta de Crédito</MenuItem>
+                <MenuItem value="TRANSFER">Transferencia</MenuItem>
+                <MenuItem value="OTHER">Otro</MenuItem>
+              </Select>
+            </FormControl>
+
+            <TextField
+              label="Description"
+              value={filters.description}
+              onChange={(event) => handleFilterChange('description', event.target.value)}
+            />
+
+            <TextField
+              label="Fecha de Inicio"
+              type="date"
+              value={filters.dateFrom}
+              onChange={(event) => handleFilterChange('dateFrom', event.target.value)}
+              InputLabelProps={{
+                shrink: true,
+                style: { marginTop: '-10px' },
+              }}
+            />
+
+            <TextField
+              label="Fecha de Fin"
+              type="date"
+              value={filters.dateTo}
+              onChange={(event) => handleFilterChange('dateTo', event.target.value)}
+              InputLabelProps={{
+                shrink: true,
+                style: { marginTop: '-10px' },
+              }}
+            />
+
+          </div>
+
           <TransactionForm
             open={openEdit}
             handleClose={handleCloseEdit}
