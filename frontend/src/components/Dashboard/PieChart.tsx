@@ -114,6 +114,8 @@ export default function PieChart() {
                         <ListItemText
                           primary={category}
                           primaryTypographyProps={{ variant: 'h5', noWrap: true, fontFamily: "Segoe UI", fontWeight: 100 }}
+                          secondary={'Detalle de la ' + category}
+                          secondaryTypographyProps={{ noWrap: true, fontFamily: "Segoe UI", fontWeight: 200 }}
                         />
                         <Box>
                           <Typography align="right" variant="h4" noWrap fontFamily="Segoe UI" fontWeight={100}>

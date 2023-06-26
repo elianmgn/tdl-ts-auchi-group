@@ -33,7 +33,6 @@ export default function Currencies(props: CurrenciesProps) {
   React.useEffect(() => {
     GetCurrencyExchange().then((data) => {
       setCurrencyExchange(data);
-      console.log('DATA:', data[0].casa.nombre);
     });
     setIsLoading(false);
   }, []);

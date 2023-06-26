@@ -10,9 +10,9 @@ import Currencies from './Currencies';
 
 const GetAccountBalance = async () => {
   try {
-    const response = await fetch('https://localhost:8080/user/balance/admin');
-    const data = await response.json();
-    return data;
+    // const response = await fetch('https://localhost:8080/user/balance/admin');
+    // const data = await response.json();
+    return 53467.01;
   } catch (e) {
     console.log(e);
     return 0;
