@@ -1,18 +1,18 @@
 import React from 'react';
-import {
-  Button,
-  Box,
-  Grid,
-  Typography
-} from '@mui/material';
+import { Button, Box, Grid, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Currencies from './Currencies';
 
 const GetAccountBalance = async () => {
   try {
-    // const response = await fetch('https://localhost:8080/user/balance/admin');
-    // const data = await response.json();
-    return 53467.01;
+    const response = await fetch('http://localhost:8080/user/balance/admin', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await response.json();
+    return data;
   } catch (e) {
     console.log(e);
     return 0;
@@ -34,52 +34,49 @@ function AccountBalance() {
 
   return (
     <>
-    {isLoading ? 
-      <div>Loading...</div> 
-      :
-      <Grid p={3} spacing={2} container sx={{ alignItems: 'center' }}>
-        <Grid item xs={12}>
-          <Typography
-            sx={{
-              pb: 3
-            }}
-            variant="h4"
-            fontFamily="Segoe UI"
-          >
-            Account Balance
-          </Typography>
-        </Grid>
-        <Grid item xs={7}>
-          <Typography variant="h2" gutterBottom fontFamily="Segoe UI">
-            AR$ {balance.toLocaleString()}
-          </Typography>
-        </Grid>
-        <Grid item xs={5}>
-          <Box
-            display="flex"
-            alignItems="baseline"
-            gap={2}
-          >
-            <Typography variant="h4" fontFamily="Segoe UI" fontWeight={100}>+ AR$ {variance.toLocaleString()}</Typography>
-            <Typography variant="subtitle1" noWrap fontFamily="Segoe UI">
-              this month
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : (
+        <Grid p={3} spacing={2} container sx={{ alignItems: 'center' }}>
+          <Grid item xs={12}>
+            <Typography
+              sx={{
+                pb: 3,
+              }}
+              variant="h4"
+              fontFamily="Segoe UI"
+            >
+              Account Balance
             </Typography>
-          </Box>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Button fullWidth variant="contained" onClick={() => navigate('/transactions')}>
-            <Typography variant="subtitle1" fontFamily="Segoe UI">
-              Add new transaction
+          </Grid>
+          <Grid item xs={7}>
+            <Typography variant="h2" gutterBottom fontFamily="Segoe UI">
+              AR$ {balance.toLocaleString()}
             </Typography>
-          </Button>
-        </Grid>
-        <Grid item xs={12}>
-          <Currencies balance={balance}/>
-        </Grid>
-      </Grid>
+          </Grid>
+          <Grid item xs={5}>
+            <Box display="flex" alignItems="baseline" gap={2}>
+              <Typography variant="h4" fontFamily="Segoe UI" fontWeight={100}>
+                + AR$ {variance.toLocaleString()}
+              </Typography>
+              <Typography variant="subtitle1" noWrap fontFamily="Segoe UI">
+                this month
+              </Typography>
+            </Box>
+          </Grid>
 
-    }
+          <Grid item xs={12}>
+            <Button fullWidth variant="contained" onClick={() => navigate('/transactions')}>
+              <Typography variant="subtitle1" fontFamily="Segoe UI">
+                Add new transaction
+              </Typography>
+            </Button>
+          </Grid>
+          <Grid item xs={12}>
+            <Currencies balance={balance} />
+          </Grid>
+        </Grid>
+      )}
     </>
   );
 }
