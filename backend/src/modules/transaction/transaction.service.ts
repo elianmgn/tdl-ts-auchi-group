@@ -35,7 +35,9 @@ export class TransactionService {
       };
     }
     if (filters.description) {
-      where.description = filters.description;
+      where.description = {
+        [Op.startsWith]: filters.description,
+      };
     }
 
     if (filters.paymentMethod && filters.paymentMethod != 'ALL') {
