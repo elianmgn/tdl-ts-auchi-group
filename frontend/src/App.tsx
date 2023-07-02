@@ -11,7 +11,6 @@ import DashboardPage from './pages/DashboardPage';
 import TransactionsPage from './pages/TransactionsPage';
 import CategoriesPage from './pages/CategoriesPage';
 import ReportsPage from './pages/ReportsPage';
-import BudgetsPage from './pages/BudgetsPage';
 
 function App() {
   return (
@@ -24,7 +23,6 @@ function App() {
           <Route path="/transactions" element={<TransactionsPage/>}/>
           <Route path="/categories" element={<CategoriesPage/>}/>
           <Route path="/reports" element={<ReportsPage/>}/>
-          <Route path="/budgets" element={<BudgetsPage/>}/>
         
         </Route>
       </Routes>
