@@ -23,14 +23,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import TransactionEntity from '../../models/TransactionEntity';
 import { Typography } from '@mui/material';
 
-import { matchPaymentMethodIcon } from '../../utils/TransactionIcons';
+import { matchPaymentMethodIcon } from '../../utils/transaction/TransactionIcons';
 import dayjs from 'dayjs';
 
 import CategoryIcon from '@mui/icons-material/Category';
 import TransactionForm from './TransactionForm';
+import TransactionFilter from '../../utils/transaction/TransactionFilter';
 
 interface Column {
-  id: 'description' | 'category' | 'date' | 'amount' | 'paymentMethod';
+  id: 'description' | 'category' | 'date' | 'amount' | 'paymentMethod' | 'delete';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -57,9 +58,18 @@ const columns: readonly Column[] = [
     label: 'Method',
     width: 5,
   },
+  {
+    id: 'delete',
+    label: '',
+    width: 5,
+  },
 ];
 
-export default function StickyHeadTable() {
+type ComponentProps = {
+  filters: TransactionFilter;
+};
+
+export default function StickyHeadTable({ filters }: ComponentProps) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [transactions, setTrasactions] = React.useState<TransactionEntity[]>([]);
@@ -67,21 +77,6 @@ export default function StickyHeadTable() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [openEdit, setOpenEdit] = React.useState(false);
   const [transactionInfo, setTransactionInfo] = React.useState<TransactionEntity | null>(null);
-
-  const [filters, setFilters] = React.useState({
-    type: 'ALL',
-    paymentMethod: 'ALL',
-    dateFrom: '',
-    dateTo: '',
-    description: '',
-  });
-
-  const handleFilterChange = (filterName: string, value: string) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [filterName]: value,
-    }));
-  };
 
   const handleOpenEdit = () => {
     setOpenEdit(true);
@@ -102,7 +97,7 @@ export default function StickyHeadTable() {
 
   const handleTransactionDelete = (id: number) => {
     fetch(`http://localhost:8080/transactions/${id}`, {
-    method: 'DELETE',
+      method: 'DELETE',
     })
       .then((response) => {
         if (response.ok) {
@@ -119,14 +114,14 @@ export default function StickyHeadTable() {
 
   const fetchTransactions = async () => {
     const params = new URLSearchParams(filters).toString();
-    const url = `http://localhost:8080/transactions/admin?${params}`
+    const url = `http://localhost:8080/transactions/admin?${params}`;
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
     });
-    const transactionsData = await response.json();;
+    const transactionsData = await response.json();
     setTrasactions(transactionsData);
   };
 
@@ -141,75 +136,11 @@ export default function StickyHeadTable() {
   return (
     <div style={{ width: '100%', overflow: 'hidden' }}>
       {isLoading ? (
-        <div className='container'>
+        <div className="container">
           <CircularProgress />
         </div>
       ) : (
         <div>
-          {/* Controles de filtrado */}
-          <div style={{ marginTop: '35px' }}>
-            <FormControl style={{ width: '130px', marginLeft: '20px' }}>
-              <InputLabel style={{ transform: 'translate(50px, -20px)', fontSize: '12px', fontWeight: 'bold' }}
-              >
-                Tipo
-              </InputLabel>
-              <Select
-                value={filters.type}
-                onChange={(event) => handleFilterChange('type', event.target.value)}
-              >
-                <MenuItem value="ALL">Todos</MenuItem>
-                <MenuItem value="INCOME">Ingreso</MenuItem>
-                <MenuItem value="EXPENSE">Egreso</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl style={{ width: '130px' }}>
-              <InputLabel style={{ transform: 'translate(20px, -20px)', fontSize: '12px', fontWeight: 'bold' }}
-              >
-                Método de Pago
-              </InputLabel>
-              <Select
-                value={filters.paymentMethod}
-                onChange={(event) => handleFilterChange('paymentMethod', event.target.value)}
-              >
-                <MenuItem value="ALL">Todos</MenuItem>
-                <MenuItem value="CASH">Efectivo</MenuItem>
-                <MenuItem value="CREDIT-CARD">Tarjeta de Crédito</MenuItem>
-                <MenuItem value="TRANSFER">Transferencia</MenuItem>
-                <MenuItem value="OTHER">Otro</MenuItem>
-              </Select>
-            </FormControl>
-
-            <TextField
-              label="Description"
-              value={filters.description}
-              onChange={(event) => handleFilterChange('description', event.target.value)}
-            />
-
-            <TextField
-              label="Fecha de Inicio"
-              type="date"
-              value={filters.dateFrom}
-              onChange={(event) => handleFilterChange('dateFrom', event.target.value)}
-              InputLabelProps={{
-                shrink: true,
-                style: { marginTop: '-10px' },
-              }}
-            />
-
-            <TextField
-              label="Fecha de Fin"
-              type="date"
-              value={filters.dateTo}
-              onChange={(event) => handleFilterChange('dateTo', event.target.value)}
-              InputLabelProps={{
-                shrink: true,
-                style: { marginTop: '-10px' },
-              }}
-            />
-
-          </div>
-
           <TransactionForm
             open={openEdit}
             handleClose={handleCloseEdit}
@@ -270,10 +201,12 @@ export default function StickyHeadTable() {
                           {matchPaymentMethodIcon(row['paymentMethod'])}
                         </TableCell>
                         <TableCell key="delete" align="center">
-                          <IconButton onClick={() => row['id'] && handleTransactionDelete(row['id'])}>
+                          <IconButton
+                            onClick={() => row['id'] && handleTransactionDelete(row['id'])}
+                          >
                             <DeleteIcon />
                           </IconButton>
-                      </TableCell>
+                        </TableCell>
                       </TableRow>
                     );
                   })}

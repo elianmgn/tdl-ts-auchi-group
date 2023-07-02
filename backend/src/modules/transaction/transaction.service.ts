@@ -36,7 +36,7 @@ export class TransactionService {
     }
     if (filters.description) {
       where.description = {
-        [Op.startsWith]: filters.description,
+        [Op.iRegexp]: filters.description,
       };
     }
 
