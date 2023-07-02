@@ -23,7 +23,7 @@ export class TransactionService {
     const userWithId = await this.userService.findOneUserByUsername(username);
     const where: any = { userId: userWithId.id };
 
-    if (filters.type) {
+    if (filters.type && filters.type != 'ALL') {
       where.type = filters.type;
     }
     if (filters.categoryId) {
@@ -35,9 +35,12 @@ export class TransactionService {
       };
     }
     if (filters.description) {
-      where.description = filters.description;
+      where.description = {
+        [Op.startsWith]: filters.description,
+      };
     }
-    if (filters.paymentMethod) {
+
+    if (filters.paymentMethod && filters.paymentMethod != 'ALL') {
       where.paymentMethod = filters.paymentMethod;
     }
 

@@ -56,7 +56,7 @@ const formSchema = object({
     invalid_type_error: 'Amount must be a number',
   }).positive('Please use a positive number'),
   date: string().nonempty('Date is required'),
-  payment_method: string().nonempty('Payment method is required'),
+  paymentMethod: string().nonempty('Payment method is required'),
 });
 
 type RegisterInput = TypeOf<typeof formSchema>;
@@ -84,7 +84,7 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
 
   const resetValues = () => {
     reset();
-    setValue('payment_method', 'CASH');
+    setValue('paymentMethod', 'CASH');
     setValue('type', 'INCOME');
     setValue('date', dayjs().format('YYYY-MM-DD').toString());
   };
@@ -168,7 +168,7 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
         setValue('amount', transactionInfo.amount);
         setValue('date', transactionInfo.date);
         setValue('type', transactionInfo.type);
-        setValue('payment_method', transactionInfo.payment_method);
+        setValue('paymentMethod', transactionInfo.paymentMethod);
       } else {
         resetValues();
       }
@@ -265,20 +265,20 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
               {/* Payment Method Input */}
               <ToggleButtonGroup
                 color="primary"
-                value={watch('payment_method')}
+                value={watch('paymentMethod')}
                 exclusive
                 onChange={(_: React.MouseEvent<HTMLElement>, value: string) => {
                   if (value !== null) {
-                    setValue('payment_method', value);
+                    setValue('paymentMethod', value);
                   }
                 }}
-                aria-label="payment method"
+                aria-label="paymentMethod"
                 className="toggle-button-group"
               >
                 <ToggleButton value="CASH" aria-label="cash">
                   <LocalAtmIcon />
                 </ToggleButton>
-                <ToggleButton value="CREDIT_CARD" aria-label="credit card">
+                <ToggleButton value="CREDIT-CARD" aria-label="credit card">
                   <CreditCardIcon />
                 </ToggleButton>
                 <ToggleButton value="TRANSFER" aria-label="transfer">
