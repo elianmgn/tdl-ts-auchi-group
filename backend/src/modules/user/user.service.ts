@@ -23,6 +23,14 @@ export class UserService {
       where.date = {
         [Op.between]: [filters.dateFrom, filters.dateTo],
       };
+    } else if (filters.dateFrom) {
+      where.date = {
+        [Op.gte]: filters.dateFrom,
+      };
+    } else if (filters.dateTo) {
+      where.date = {
+        [Op.lte]: filters.dateTo,
+      };
     }
 
     const incomeTransactionsFilter = { ...where };

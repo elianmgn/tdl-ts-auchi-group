@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { UserService } from '../user/user.service';
-import { User } from '../user/model';
 import { Transaction, UpdateTransactionDto } from './model';
 import { Op } from 'sequelize';
 import { Category } from '../category/model';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class TransactionService {
@@ -32,6 +31,14 @@ export class TransactionService {
     if (filters.dateFrom && filters.dateTo) {
       where.date = {
         [Op.between]: [filters.dateFrom, filters.dateTo],
+      };
+    } else if (filters.dateFrom) {
+      where.date = {
+        [Op.gte]: filters.dateFrom,
+      };
+    } else if (filters.dateTo) {
+      where.date = {
+        [Op.lte]: filters.dateTo,
       };
     }
     if (filters.description) {
