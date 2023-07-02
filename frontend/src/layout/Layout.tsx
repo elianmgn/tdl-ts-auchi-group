@@ -9,12 +9,10 @@ function Layout() {
     <div>
       {/* Agregar cualquier contenido comun a todas las rutas */}
       <Header/>
-
       <main>
         {/* Renderiza el contenido específico de cada ruta */}
         <Outlet/>
       </main>
-      
     </div>
   );
 }
