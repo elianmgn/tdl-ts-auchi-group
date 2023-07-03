@@ -9,11 +9,17 @@ export class CategoryService {
   }
 
   async getFilteredCategories(filters: {
+    name?: string;
     dateFrom?: string;
     dateTo?: string;
   }): Promise<Category[]> {
     const where: any = {};
 
+    if (filters.name) {
+      where.name = {
+        [Op.iRegexp]: filters.name,
+      };
+    }
     if (filters.dateFrom && filters.dateTo) {
       where.date = {
         [Op.between]: [filters.dateFrom, filters.dateTo],

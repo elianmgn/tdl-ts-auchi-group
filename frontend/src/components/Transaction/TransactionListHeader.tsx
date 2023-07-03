@@ -8,12 +8,11 @@ import {
   TextField,
   Button,
 } from '@mui/material';
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
-import TransactionFilter from '../../utils/transaction/TransactionFilter';
+import AddIcon from '@mui/icons-material/Add';
 import './TransactionListHeader.css';
 
 interface ComponentProps {
-  filters: TransactionFilter;
+  filters: Record<string, string>;
   handleFilterChange: (filterName: string, value: string | null) => void;
   handleOpen: () => void;
 }
@@ -94,7 +93,7 @@ function TransactionListHeader({ filters, handleFilterChange, handleOpen }: Comp
 
         {/* Botón de agregar */}
         <div className="add-button-container">
-          <Button variant="contained" onClick={handleOpen} startIcon={<ReceiptLongIcon />}>
+          <Button variant="contained" onClick={handleOpen} startIcon={<AddIcon />}>
             ADD
           </Button>
         </div>

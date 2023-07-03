@@ -1,5 +1,4 @@
 import React from 'react';
-
 import TransactionList from '../components/Transaction/TransactionList';
 
 import TransactionForm from '../components/Transaction/TransactionForm';
@@ -15,7 +14,6 @@ export default function TransactionsPage() {
   });
   
   const handleFilterChange = (filterName: string, value: string |  null) => {
-    console.log(`Filter ${filterName} changed to ${value}`);
     setFilters((prevFilters) => ({
       ...prevFilters,
       [filterName]: value,

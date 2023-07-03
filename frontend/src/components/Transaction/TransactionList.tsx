@@ -15,6 +15,9 @@ import {
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
+import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
+
 import TransactionEntity from '../../models/TransactionEntity';
 import { Typography } from '@mui/material';
 
@@ -23,7 +26,6 @@ import dayjs from 'dayjs';
 
 import CategoryIcon from '@mui/icons-material/Category';
 import TransactionForm from './TransactionForm';
-import TransactionFilter from '../../utils/transaction/TransactionFilter';
 
 interface Column {
   id: 'description' | 'category' | 'date' | 'amount' | 'paymentMethod' | 'delete';
@@ -61,7 +63,7 @@ const columns: readonly Column[] = [
 ];
 
 type ComponentProps = {
-  filters: TransactionFilter;
+  filters: Record<string, string>;
 };
 
 export default function StickyHeadTable({ filters }: ComponentProps) {
@@ -117,7 +119,7 @@ export default function StickyHeadTable({ filters }: ComponentProps) {
       },
     });
     const transactionsData = await response.json();
-    setTrasactions(transactionsData);
+    sortTransactionsByCreationDate(transactionsData);
   };
 
   React.useEffect(() => {
@@ -127,6 +129,44 @@ export default function StickyHeadTable({ filters }: ComponentProps) {
   React.useEffect(() => {
     setIsLoading(false);
   }, [transactions]);
+
+
+  const [ascendingDateSort, setAscendingDateSort] = React.useState(false);
+  function sortTransactionsByCreationDate(
+    transactionData: (TransactionEntity)[],
+    ascending = false,
+  ) {
+    transactionData.sort((a, b) => {
+      const dateA = a.date;
+      const dateB = b.date;
+      if (ascending) {
+        // Older to newer
+        return new Date(dateA).getTime() - new Date(dateB).getTime();
+      }
+      return new Date(dateB).getTime() - new Date(dateA).getTime();
+    });
+    setTrasactions(transactionData);
+  }
+
+  const sortByDateIcon = (id: string) => {
+    if (id === 'date') {
+      return (
+        <IconButton
+          size="small"
+          onClick={() => {
+            setAscendingDateSort(!ascendingDateSort);
+            sortTransactionsByCreationDate(transactions, !ascendingDateSort);
+          }}
+        >
+          {ascendingDateSort ? (
+            <ArrowDownwardRoundedIcon fontSize="inherit" />
+          ) : (
+            <ArrowUpwardRoundedIcon fontSize="inherit" />
+          )}
+        </IconButton>
+      );
+    }
+  };
 
   return (
     <div style={{ width: '100%', overflow: 'hidden' }}>
@@ -151,7 +191,16 @@ export default function StickyHeadTable({ filters }: ComponentProps) {
                       align={column.align}
                       style={{ minWidth: column.minWidth, width: column.width }}
                     >
-                      {column.label}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <div>{column.label}</div>
+                        {sortByDateIcon(column.id)}
+                      </div>
                     </TableCell>
                   ))}
                 </TableRow>

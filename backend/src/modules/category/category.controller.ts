@@ -18,10 +18,12 @@ export class CategoryController {
 
   @Get()
   getCategories(
+    @Query('name') name: string,
     @Query('dateFrom') dateFrom: string,
     @Query('dateTo') dateTo: string,
   ): Promise<Category[]> {
     return this.categoryService.getFilteredCategories({
+      name,
       dateFrom,
       dateTo,
     });

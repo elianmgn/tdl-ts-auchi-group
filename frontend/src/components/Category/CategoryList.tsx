@@ -9,11 +9,12 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TextField,
+  IconButton,
 } from '@mui/material';
 
-import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
+import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 
 import dayjs from 'dayjs';
 
@@ -21,7 +22,7 @@ import CategoryForm from './CategoryForm';
 import CategoryEntity from '../../models/CategoryEntity';
 
 interface Column {
-  id: 'description' | 'name' | 'createdAt';
+  id: 'description' | 'name' | 'createdAt' | 'delete';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -37,28 +38,21 @@ const columns: readonly Column[] = [
   },
   { id: 'name', label: 'Name', minWidth: 50 },
   { id: 'description', label: 'Description', minWidth: 50 },
+  { id: 'delete', label: '', width: 5 },
 ];
 
-export default function StickyHeadTable() {
+type ComponentProps = {
+  filters: Record<string, string>;
+};
+
+export default function StickyHeadTable({ filters }: ComponentProps) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [categories, setCategories] = React.useState<typeof CategoryEntity[]>([]);
+  const [categories, setCategories] = React.useState<(typeof CategoryEntity)[]>([]);
 
   const [isLoading, setIsLoading] = React.useState(true);
   const [openEdit, setOpenEdit] = React.useState(false);
   const [categoryInfo, setCategoryInfo] = React.useState<typeof CategoryEntity | null>(null);
-
-  const [filters, setFilters] = React.useState({
-    dateFrom: '',
-    dateTo: '',
-  });
-
-  const handleFilterChange = (filterName: string, value: string) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [filterName]: value,
-    }));
-  };
 
   const handleOpenEdit = () => {
     setOpenEdit(true);
@@ -79,7 +73,7 @@ export default function StickyHeadTable() {
 
   const handleCategoryDelete = (id: number) => {
     fetch(`http://localhost:8080/categories/${id}`, {
-    method: 'DELETE',
+      method: 'DELETE',
     })
       .then((response) => {
         if (response.ok) {
@@ -96,15 +90,15 @@ export default function StickyHeadTable() {
 
   const fetchCategories = async () => {
     const params = new URLSearchParams(filters).toString();
-    const url = `http://localhost:8080/categories/?${params}`
+    const url = `http://localhost:8080/categories/?${params}`;
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
     });
-    const categoriesData = await response.json();
-    setCategories(categoriesData);
+    const categoriesData: (typeof CategoryEntity)[] = await response.json();
+    sortCategoriesByCreationDate(categoriesData, ascendingDateSort);
   };
 
   React.useEffect(() => {
@@ -115,45 +109,49 @@ export default function StickyHeadTable() {
     setIsLoading(false);
   }, [categories]);
 
+  const [ascendingDateSort, setAscendingDateSort] = React.useState(false);
+  function sortCategoriesByCreationDate(categoriesData: (typeof CategoryEntity)[], ascending = false) {
+    categoriesData.sort((a, b) => {
+      const dateA = a.createdAt;
+      const dateB = b.createdAt;
+      if (ascending) {
+        // Older to newer
+        return new Date(dateA).getTime() - new Date(dateB).getTime();
+      }
+      return new Date(dateB).getTime() - new Date(dateA).getTime();
+    });
+    setCategories(categoriesData);
+  }
+  
+  const sortByDateIcon = (id: string) => {
+    if (id === 'createdAt') {
+      return (
+        <IconButton
+        size="small"
+        onClick={() => {
+          setAscendingDateSort(!ascendingDateSort);
+          sortCategoriesByCreationDate(categories, !ascendingDateSort);
+          }}
+        >
+          {ascendingDateSort ? (
+            <ArrowDownwardRoundedIcon fontSize="inherit" />
+          ) : (
+            <ArrowUpwardRoundedIcon fontSize="inherit" />
+          )}
+        </IconButton>
+      );
+    }
+  };
+
   return (
     <div style={{ width: '100%', overflow: 'hidden' }}>
       {isLoading ? (
-        <div className='container'>
+        <div className="container">
           <CircularProgress />
         </div>
       ) : (
         <div>
-          {/* Controles de filtrado */}
-          <div style={{ marginTop: '35px', marginLeft: '20px' }}>
-            <TextField
-              label="Fecha de Inicio"
-              type="date"
-              value={filters.dateFrom}
-              onChange={(event) => handleFilterChange('dateFrom', event.target.value)}
-              InputLabelProps={{
-                shrink: true,
-                style: { marginTop: '-10px' },
-              }}
-            />
-
-            <TextField
-              label="Fecha de Fin"
-              type="date"
-              value={filters.dateTo}
-              onChange={(event) => handleFilterChange('dateTo', event.target.value)}
-              InputLabelProps={{
-                shrink: true,
-                style: { marginTop: '-10px' },
-              }}
-            />
-
-          </div>
-
-          <CategoryForm
-            open={openEdit}
-            handleClose={handleCloseEdit}
-            categoryInfo={categoryInfo}
-          />
+          <CategoryForm open={openEdit} handleClose={handleCloseEdit} categoryInfo={categoryInfo} />
           <TableContainer sx={{ maxHeight: 440 }}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
@@ -164,7 +162,16 @@ export default function StickyHeadTable() {
                       align={column.align}
                       style={{ minWidth: column.minWidth, width: column.width }}
                     >
-                      {column.label}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <div>{column.label}</div>
+                        {sortByDateIcon(column.id)}
+                      </div>
                     </TableCell>
                   ))}
                 </TableRow>
@@ -183,14 +190,16 @@ export default function StickyHeadTable() {
                           handleOpenEdit();
                         }}
                       >
-                        <TableCell key="createdAt">{dayjs(row['createdAt']).format('DD MMM')}</TableCell>
+                        <TableCell key="createdAt">
+                          {dayjs(row['createdAt']).format('DD MMM')}
+                        </TableCell>
                         <TableCell key="name">{row['name']}</TableCell>
                         <TableCell key="description">{row['description']}</TableCell>
                         <TableCell key="delete" align="center">
                           <IconButton onClick={() => row['id'] && handleCategoryDelete(row['id'])}>
                             <DeleteIcon />
                           </IconButton>
-                      </TableCell>
+                        </TableCell>
                       </TableRow>
                     );
                   })}
