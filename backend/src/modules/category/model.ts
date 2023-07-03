@@ -24,6 +24,12 @@ export class Category extends Model<Category> {
   @HasMany(() => Transaction)
   transactions: Transaction[];
 
+  @Column
+  icon: string;
+
+  @Column
+  color: string;
+
   @Column({ field: 'created_at' })
   createdAt: Date;
 
@@ -36,6 +42,7 @@ export class Category extends Model<Category> {
 
 export type UpdateCategoryDto = {
   name: string;
-
   description: string;
+  icon: string;
+  color: string;
 };

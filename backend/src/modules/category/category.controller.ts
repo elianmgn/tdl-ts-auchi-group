@@ -18,10 +18,12 @@ export class CategoryController {
 
   @Get()
   getCategories(
+    @Query('name') name: string,
     @Query('dateFrom') dateFrom: string,
     @Query('dateTo') dateTo: string,
   ): Promise<Category[]> {
     return this.categoryService.getFilteredCategories({
+      name,
       dateFrom,
       dateTo,
     });
@@ -35,6 +37,8 @@ export class CategoryController {
 
   @Put(':id')
   updateCategory(@Param('id') id: number, @Body() category) {
+    console.log('update category');
+    console.log(category);
     return this.categoryService.updateCategory(category, id);
   }
 
