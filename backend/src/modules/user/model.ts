@@ -1,3 +1,4 @@
+import { IsEmail, IsNotEmpty } from 'class-validator';
 import {
   AutoIncrement,
   Column,
@@ -41,4 +42,22 @@ export class User extends Model<User> {
 
   @Column({ field: 'deleted_at' })
   deletedAt: Date;
+}
+
+export class CreateUserDto {
+  @IsNotEmpty()
+  firstName: string;
+
+  @IsNotEmpty()
+  lastName: string;
+
+  @IsNotEmpty()
+  username: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  password: string;
 }
