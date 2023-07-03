@@ -10,11 +10,6 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
 } from '@mui/material';
 
 import IconButton from '@mui/material/IconButton';

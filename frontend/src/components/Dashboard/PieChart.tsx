@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import {
   Box,
@@ -6,9 +7,19 @@ import {
   ListItem,
   ListItemText,
   List,
+  Divider,
 } from '@mui/material';
 import Chart from 'react-apexcharts';
 import type { ApexOptions } from 'apexcharts';
+
+type Category = {
+  createdAt: string;
+  deletedAt: string;
+  description: string;
+  id: number;
+  name: string;
+  updatedAt: string;
+};
 
 const generateRandomColors = (quantity: number): string[] => {
   const colors: string[] = [];
@@ -52,28 +63,43 @@ const GetCategories = async () => {
 };
 
 const GetExpenditureTransactions = async () => {
-    const url = `http://localhost:8080/transactions/admin?type=EXPENSE`
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const transactionsData = await response.json();;
-    return transactionsData;
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = (today.getMonth() + 1).toString().padStart(2, '0');
+  const formattedDate = `${year}-${month}-01`;
+
+  const url = `http://localhost:8080/transactions/admin?type=EXPENSE&dateFrom=${formattedDate}`
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const transactionsData = await response.json();
+  console.log('Transactions from this month: ', transactionsData);
+  return transactionsData;
   };
 
 export default function PieChart() {
-  const [chartCategories, setChartCategories] = React.useState([{name: 'Loading', description: 'Loading', expenditures: 0, variance: '0%'}]);
-  const [chartSeries, setChartSeries] = React.useState([10]);
+  const [chartCategories, setChartCategories] = React.useState([{name: 'Loading', description: 'Loading', expenditure: 0}]);
+  const [totalExpenditure, setTotalExpenditure] = React.useState(0);
 
   React.useEffect(() => {
-    GetCategories().then((data) => {
-      const categories: { name: string, description: string, expenditures: number, variance: string }[] = data.map((category: any) => {
-        return ({name: category.name, description: category.description, expenditures: 1, variance: '0%'})
+    GetCategories().then(async (data) => {
+      const categories = data.map((category: Category) => ({name: category.name, description: category.description}));
+      GetExpenditureTransactions().then((transactions) => {
+        const categoriesWithExpenditures = categories.map((category: Category) => {
+          // Get this month's transactions for this category
+          const transactionsForCategory = transactions.filter((transaction: any) => transaction.category.name === category.name);
+          // Get total expenditure for this category
+          const totalExpenditureForCategory = transactionsForCategory.reduce((sum: number, transaction: any) => sum + transaction.amount, 0);
+          return {...category, expenditure: totalExpenditureForCategory};
+        });
+        setTotalExpenditure(categoriesWithExpenditures.reduce((sum: number, category: any) => sum + category.expenditure, 0));
+        setChartCategories(categoriesWithExpenditures);
       });
-      setChartCategories(categories);
     });
+    GetExpenditureTransactions();
   }, []);
 
   const chartOptions: ApexOptions = {
@@ -144,9 +170,9 @@ export default function PieChart() {
       <Grid container>
         <Box py={4} pr={4} flex={1}>
           <Grid container>
-            <Grid item xs={12} marginLeft={5}>
+            <Grid item xs={12} marginLeft={5} marginBottom={2}>
               <Typography variant="h4" noWrap fontFamily="Segoe UI" fontWeight={100}>
-                Expenditure
+                Current month expenditure report
               </Typography>
             </Grid>
             <Grid
@@ -159,7 +185,7 @@ export default function PieChart() {
                 <Chart
                 height={300}
                 options={chartOptions}
-                series={chartCategories.map((category) => (category.expenditures))}
+                series={chartCategories.map((category) => (category.expenditure))}
                 type="donut"
                 />
             </Grid>
@@ -180,14 +206,26 @@ export default function PieChart() {
                           secondaryTypographyProps={{ noWrap: true, fontFamily: "Segoe UI", fontWeight: 200 }}
                         />
                         <Box>
-                          <Typography align="right" variant="h4" noWrap fontFamily="Segoe UI" fontWeight={100}>
-                            {category.variance}
+                          <Typography align="right" variant="h4" noWrap fontFamily="Segoe UI" fontWeight={100} fontStyle={{ color: '#c70000' }}>
+                            {"AR$ " + category.expenditure.toLocaleString()}
                           </Typography>
                         </Box>
                       </ListItem>
                     )
                   )
                 }
+                 <Divider component="li" />
+                <ListItem disableGutters key={chartCategories.length}>
+                  <ListItemText
+                    primary="Total"
+                    primaryTypographyProps={{ variant: 'h5', noWrap: true, fontFamily: "Segoe UI", fontWeight: 100 }}
+                  />
+                  <Box>
+                    <Typography align="right" variant="h4" noWrap fontFamily="Segoe UI" fontWeight={100} fontStyle={{ color: '#c70000' }}>
+                      {"AR$ " + totalExpenditure.toLocaleString()}
+                    </Typography>
+                  </Box>
+                </ListItem>
               </List>
             </Grid>
           </Grid>

@@ -11,8 +11,6 @@ const GetAccountBalances = async () => {
 
     const formattedDate = `${year}-${month}-01`;
 
-    console.log('First day of current month:', formattedDate);
-
     const generalResponse = await fetch('http://localhost:8080/user/balance/admin', {
       method: 'GET',
       headers: {
@@ -20,36 +18,44 @@ const GetAccountBalances = async () => {
       },
     });
     const generalBalance = await generalResponse.json();
-    console.log('general:', generalBalance);
 
-    const prevMonthResponse = await fetch(`http://localhost:8080/user/balance/admin?dateTo=${formattedDate}`, {
+    const currentMonthResponse = await fetch(`http://localhost:8080/user/balance/admin?dateFrom=${formattedDate}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
     });
-    const prevMonthBalance = await prevMonthResponse.json();
-    console.log('prevMonthResponse:', prevMonthBalance);
+    const currentMonthBalance = await currentMonthResponse.json();
 
-    return generalBalance;
+    return [generalBalance, currentMonthBalance];
   } catch (e) {
     console.log(e);
-    return 0;
+    return [];
   }
 };
+
 
 function AccountBalance() {
   const navigate = useNavigate();
   const [balance, setBalance] = React.useState(54584.23);
-  const [variance, setVariance] = React.useState(3594.01);
+  const [variance, setVariance] = React.useState("+ AR$ 0");
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
     GetAccountBalances().then((data) => {
-      setBalance(data);
+      setBalance(data[0]);
+      determineVariance(data[1]);
       setIsLoading(false);
     });
   }, []);
+
+  const determineVariance = (currentMonthBalance: number) => {
+    if (currentMonthBalance < 0) {
+      setVariance("- AR$ " + currentMonthBalance.toLocaleString().substring(1));
+    } else {
+      setVariance("+ AR$ " + currentMonthBalance.toLocaleString());
+    }
+  };
 
   return (
     <>
@@ -76,7 +82,7 @@ function AccountBalance() {
           <Grid item xs={4}>
             <Box display="flex" alignItems="baseline" gap={2}>
               <Typography variant="h4" fontFamily="Segoe UI" fontWeight={100}>
-                + AR$ {variance.toLocaleString()}
+                {variance}
               </Typography>
               <Typography variant="subtitle1" noWrap fontFamily="Segoe UI">
                 this month
