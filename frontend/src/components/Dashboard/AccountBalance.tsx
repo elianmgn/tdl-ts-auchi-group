@@ -37,7 +37,7 @@ const GetAccountBalances = async () => {
 
 function AccountBalance() {
   const navigate = useNavigate();
-  const [balance, setBalance] = React.useState(54584.23);
+  const [balance, setBalance] = React.useState(0);
   const [variance, setVariance] = React.useState("+ AR$ 0");
   const [isLoading, setIsLoading] = React.useState(true);
 
