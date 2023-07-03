@@ -10,8 +10,10 @@ import {
   TablePagination,
   TableRow,
   IconButton,
+  Chip,
+  Tooltip,
 } from '@mui/material';
-
+import { Icon } from '@material-ui/core';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
@@ -22,7 +24,7 @@ import CategoryForm from './CategoryForm';
 import CategoryEntity from '../../models/CategoryEntity';
 
 interface Column {
-  id: 'description' | 'name' | 'createdAt' | 'delete';
+  id: 'description' | 'name' | 'createdAt';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -37,8 +39,7 @@ const columns: readonly Column[] = [
     width: 50,
   },
   { id: 'name', label: 'Name', minWidth: 50 },
-  { id: 'description', label: 'Description', minWidth: 50 },
-  { id: 'delete', label: '', width: 5 },
+  { id: 'description', label: 'Description', minWidth: 100 },
 ];
 
 type ComponentProps = {
@@ -71,23 +72,6 @@ export default function StickyHeadTable({ filters }: ComponentProps) {
     setPage(0);
   };
 
-  const handleCategoryDelete = (id: number) => {
-    fetch(`http://localhost:8080/categories/${id}`, {
-      method: 'DELETE',
-    })
-      .then((response) => {
-        if (response.ok) {
-          fetchCategories();
-          console.log('Categoría eliminada');
-        } else {
-          console.error('Error al eliminar la categoría');
-        }
-      })
-      .catch((error) => {
-        console.error('Error de red', error);
-      });
-  };
-
   const fetchCategories = async () => {
     const params = new URLSearchParams(filters).toString();
     const url = `http://localhost:8080/categories/?${params}`;
@@ -110,7 +94,10 @@ export default function StickyHeadTable({ filters }: ComponentProps) {
   }, [categories]);
 
   const [ascendingDateSort, setAscendingDateSort] = React.useState(false);
-  function sortCategoriesByCreationDate(categoriesData: (typeof CategoryEntity)[], ascending = false) {
+  function sortCategoriesByCreationDate(
+    categoriesData: (typeof CategoryEntity)[],
+    ascending = false,
+  ) {
     categoriesData.sort((a, b) => {
       const dateA = a.createdAt;
       const dateB = b.createdAt;
@@ -122,15 +109,15 @@ export default function StickyHeadTable({ filters }: ComponentProps) {
     });
     setCategories(categoriesData);
   }
-  
+
   const sortByDateIcon = (id: string) => {
     if (id === 'createdAt') {
       return (
         <IconButton
-        size="small"
-        onClick={() => {
-          setAscendingDateSort(!ascendingDateSort);
-          sortCategoriesByCreationDate(categories, !ascendingDateSort);
+          size="small"
+          onClick={() => {
+            setAscendingDateSort(!ascendingDateSort);
+            sortCategoriesByCreationDate(categories, !ascendingDateSort);
           }}
         >
           {ascendingDateSort ? (
@@ -181,26 +168,30 @@ export default function StickyHeadTable({ filters }: ComponentProps) {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     return (
-                      <TableRow
-                        hover
-                        tabIndex={-1}
-                        key={row.id}
-                        onClick={() => {
-                          setCategoryInfo(row);
-                          handleOpenEdit();
-                        }}
-                      >
-                        <TableCell key="createdAt">
-                          {dayjs(row['createdAt']).format('DD MMM')}
-                        </TableCell>
-                        <TableCell key="name">{row['name']}</TableCell>
-                        <TableCell key="description">{row['description']}</TableCell>
-                        <TableCell key="delete" align="center">
-                          <IconButton onClick={() => row['id'] && handleCategoryDelete(row['id'])}>
-                            <DeleteIcon />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
+                      <Tooltip key={row.id} title="Tap to edit or delete" arrow placement="top">
+                        <TableRow
+                          hover
+                          tabIndex={-1}
+                          key={row.id}
+                          onClick={() => {
+                            setCategoryInfo(row);
+                            handleOpenEdit();
+                          }}
+                        >
+                          <TableCell key="createdAt">
+                            {dayjs(row['createdAt']).format('DD MMM')}
+                          </TableCell>
+                          <TableCell key="name">
+                            <Chip
+                              sx={{ backgroundColor: row['color'] }}
+                              color="primary"
+                              icon={<Icon>{row['icon']}</Icon>}
+                              label={row['name']}
+                            />
+                          </TableCell>
+                          <TableCell key="description">{row['description']}</TableCell>
+                        </TableRow>
+                      </Tooltip>
                     );
                   })}
               </TableBody>

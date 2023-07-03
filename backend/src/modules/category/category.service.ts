@@ -52,6 +52,8 @@ export class CategoryService {
       {
         name: category.name,
         description: category.description,
+        icon: category.icon,
+        color: category.color,
       },
       { where: { id: id } },
     );

@@ -110,8 +110,12 @@ function TransactionForm({ open, handleClose, transactionInfo }: ComponentProps)
           body: JSON.stringify(values),
         });
       } else {
+        console.log(values);
         response = await fetch(`http://localhost:8080/transactions/${transactionInfo.id}`, {
           method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify(values),
         });
       }
@@ -190,6 +194,40 @@ function TransactionForm({ open, handleClose, transactionInfo }: ComponentProps)
     }
   };
 
+    const handleDelete = () => {
+      setLoading(true);
+      fetch(`http://localhost:8080/transactions/${transactionInfo?.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => {
+          setLoading(false);
+          if (!response.ok) {
+            // Si la respuesta no es exitosa, lanza un error
+            throw new Error('Error al obtener los datos de la API');
+          }
+
+          setAlertInfo({
+            open: true,
+            error: false,
+            message: 'The transaction was deleted successfully.',
+          });
+          handleClose();
+          resetValues();
+        })
+        .catch((error) => {
+          setAlertInfo({
+            open: true,
+            error: true,
+            message: 'There was an error with the request.',
+          });
+          setLoading(false);
+          console.error('Error:', error);
+        });
+    };
+
   return (
     <div>
       <Snackbar
@@ -264,7 +302,7 @@ function TransactionForm({ open, handleClose, transactionInfo }: ComponentProps)
             </div>
             {/* Payment Method Input */}
             <ToggleButtonGroup
-            fullWidth
+              fullWidth
               color="primary"
               value={watch('paymentMethod')}
               exclusive
@@ -298,7 +336,6 @@ function TransactionForm({ open, handleClose, transactionInfo }: ComponentProps)
                 labelId="category-label"
                 id="category-input"
                 label="Category"
-                defaultValue=""
                 {...register('category')}
               >
                 {categories.map((category: typeof CategoryEntity) => (
@@ -332,6 +369,12 @@ function TransactionForm({ open, handleClose, transactionInfo }: ComponentProps)
           </Box>
         </DialogContent>
         <DialogActions>
+          {transactionInfo && (
+            <Button color="error" onClick={handleDelete}>
+              Delete
+            </Button>
+          )}
+          <div style={{ flex: '1 0 0' }} />
           <Button onClick={handleClose}>Cancel</Button>
           <LoadingButton onClick={handleSubmit(onSubmitHandler)} type="submit" loading={loading}>
             Save

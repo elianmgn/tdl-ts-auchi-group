@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  AppBar,
-  TextField,
-  Button,
-} from '@mui/material';
+import { AppBar, TextField, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import './CategoryListHeader.css';
 

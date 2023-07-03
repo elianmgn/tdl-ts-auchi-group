@@ -3,17 +3,23 @@
     flex-direction: column;
     margin-top: 10px;
     gap: 20px;
-  }
-  .type-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
-  }
-  .toggle-button-group {
-    margin-bottom: 2px;
-  }
-  .bottom-buttons {
-    display: flex;
-    justify-content: flex-end;
-  }
+}
+.customization-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+.type-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+.toggle-button-group {
+  margin-bottom: 2px;
+}
+.bottom-buttons {
+  display: flex;
+  justify-content: flex-end;
+}

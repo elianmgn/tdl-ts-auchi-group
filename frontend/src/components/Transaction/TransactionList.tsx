@@ -10,10 +10,10 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Tooltip,
 } from '@mui/material';
 
 import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
 
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
@@ -24,11 +24,11 @@ import { Typography } from '@mui/material';
 import { matchPaymentMethodIcon } from '../../utils/transaction/TransactionIcons';
 import dayjs from 'dayjs';
 
-import CategoryIcon from '@mui/icons-material/Category';
+import { Icon } from '@material-ui/core';
 import TransactionForm from './TransactionForm';
 
 interface Column {
-  id: 'description' | 'category' | 'date' | 'amount' | 'paymentMethod' | 'delete';
+  id: 'description' | 'category' | 'date' | 'amount' | 'paymentMethod';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -53,11 +53,6 @@ const columns: readonly Column[] = [
   {
     id: 'paymentMethod',
     label: 'Method',
-    width: 5,
-  },
-  {
-    id: 'delete',
-    label: '',
     width: 5,
   },
 ];
@@ -92,23 +87,6 @@ export default function StickyHeadTable({ filters }: ComponentProps) {
     setPage(0);
   };
 
-  const handleTransactionDelete = (id: number) => {
-    fetch(`http://localhost:8080/transactions/${id}`, {
-      method: 'DELETE',
-    })
-      .then((response) => {
-        if (response.ok) {
-          fetchTransactions();
-          console.log('Transacción eliminada');
-        } else {
-          console.error('Error al eliminar la transacción');
-        }
-      })
-      .catch((error) => {
-        console.error('Error de red', error);
-      });
-  };
-
   const fetchTransactions = async () => {
     const params = new URLSearchParams(filters).toString();
     const url = `http://localhost:8080/transactions/admin?${params}`;
@@ -130,12 +108,8 @@ export default function StickyHeadTable({ filters }: ComponentProps) {
     setIsLoading(false);
   }, [transactions]);
 
-
   const [ascendingDateSort, setAscendingDateSort] = React.useState(false);
-  function sortTransactionsByCreationDate(
-    transactionData: (TransactionEntity)[],
-    ascending = false,
-  ) {
+  function sortTransactionsByCreationDate(transactionData: TransactionEntity[], ascending = false) {
     transactionData.sort((a, b) => {
       const dateA = a.date;
       const dateB = b.date;
@@ -210,48 +184,41 @@ export default function StickyHeadTable({ filters }: ComponentProps) {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     return (
-                      <TableRow
-                        hover
-                        tabIndex={-1}
-                        key={row.id}
-                        onClick={() => {
-                          setTransactionInfo(row);
-                          handleOpenEdit();
-                        }}
-                      >
-                        <TableCell key="date">{dayjs(row['date']).format('DD MMM')}</TableCell>
-                        <TableCell key="category">
-                          <Chip
-                            variant="outlined"
-                            icon={<CategoryIcon />}
-                            label={
-                              row['category']?.name.charAt(0).toUpperCase() +
-                              row['category']?.name.toLowerCase().slice(1)
-                            }
-                          />
-                        </TableCell>
-                        <TableCell key="description">{row['description']}</TableCell>
-                        <TableCell key="amount" align="right">
-                          <Typography
-                            style={{
-                              color: row['type'] === 'EXPENSE' ? 'darkred' : 'darkgreen',
-                              fontWeight: 'bold',
-                            }}
-                          >
-                            {row['type'] === 'EXPENSE' ? '- ' : '+ '}$ {row['amount']}
-                          </Typography>
-                        </TableCell>
-                        <TableCell key="paymentMethod" align="center">
-                          {matchPaymentMethodIcon(row['paymentMethod'])}
-                        </TableCell>
-                        <TableCell key="delete" align="center">
-                          <IconButton
-                            onClick={() => row['id'] && handleTransactionDelete(row['id'])}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
+                      <Tooltip key={row.id} title="Tap to edit or delete" arrow placement="top">
+                        <TableRow
+                          hover
+                          tabIndex={-1}
+                          key={row.id}
+                          onClick={() => {
+                            setTransactionInfo(row);
+                            handleOpenEdit();
+                          }}
+                        >
+                          <TableCell key="date">{dayjs(row['date']).format('DD MMM')}</TableCell>
+                          <TableCell key="category">
+                            <Chip
+                              sx={{ backgroundColor: row['category']?.color }}
+                              color="primary"
+                              icon={<Icon>{row['category']?.icon}</Icon>}
+                              label={row['category']?.name}
+                            />
+                          </TableCell>
+                          <TableCell key="description">{row['description']}</TableCell>
+                          <TableCell key="amount" align="right">
+                            <Typography
+                              style={{
+                                color: row['type'] === 'EXPENSE' ? 'darkred' : 'darkgreen',
+                                fontWeight: 'bold',
+                              }}
+                            >
+                              {row['type'] === 'EXPENSE' ? '- ' : '+ '}$ {row['amount']}
+                            </Typography>
+                          </TableCell>
+                          <TableCell key="paymentMethod" align="center">
+                            {matchPaymentMethodIcon(row['paymentMethod'])}
+                          </TableCell>
+                        </TableRow>
+                      </Tooltip>
                     );
                   })}
               </TableBody>

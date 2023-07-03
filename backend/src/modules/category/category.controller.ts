@@ -37,6 +37,8 @@ export class CategoryController {
 
   @Put(':id')
   updateCategory(@Param('id') id: number, @Body() category) {
+    console.log('update category');
+    console.log(category);
     return this.categoryService.updateCategory(category, id);
   }
 
