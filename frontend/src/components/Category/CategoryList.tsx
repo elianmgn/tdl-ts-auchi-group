@@ -14,7 +14,6 @@ import {
   Tooltip,
 } from '@mui/material';
 import { Icon } from '@material-ui/core';
-import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 

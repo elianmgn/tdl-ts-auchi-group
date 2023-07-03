@@ -69,22 +69,22 @@ function AccountBalance() {
                 pb: 3,
               }}
               variant="h4"
-              fontFamily="Segoe UI"
+              fontFamily="Noto Sans"
             >
               Account Balance
             </Typography>
           </Grid>
           <Grid item xs={4}>
-            <Typography variant="h2" gutterBottom fontFamily="Segoe UI">
+            <Typography variant="h2" gutterBottom fontFamily="Noto Sans">
               AR$ {balance.toLocaleString()}
             </Typography>
           </Grid>
           <Grid item xs={4}>
             <Box display="flex" alignItems="baseline" gap={2}>
-              <Typography variant="h4" fontFamily="Segoe UI" fontWeight={100}>
+              <Typography variant="h4" fontFamily="Noto Sans" fontWeight={100}>
                 {variance}
               </Typography>
-              <Typography variant="subtitle1" noWrap fontFamily="Segoe UI">
+              <Typography variant="subtitle1" noWrap fontFamily="Noto Sans">
                 this month
               </Typography>
             </Box>
@@ -92,13 +92,13 @@ function AccountBalance() {
 
           <Grid item xs={4}>
             <Button fullWidth variant="contained" onClick={() => navigate('/transactions')}>
-              <Typography variant="subtitle1" fontFamily="Segoe UI">
+              <Typography variant="subtitle1" fontFamily="Noto Sans">
                 Add new transaction
               </Typography>
             </Button>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="h6" noWrap fontFamily="Segoe UI" fontWeight={400}>
+            <Typography variant="h6" noWrap fontFamily="Noto Sans" fontWeight={400}>
               Equivalent to:
             </Typography>
           </Grid>

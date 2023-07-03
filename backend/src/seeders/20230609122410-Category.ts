@@ -26,7 +26,7 @@ module.exports = {
         name: 'Travel',
         description: 'Travel and transportation',
         icon: 'flight',
-        color: 'salmon',
+        color: 'crimson',
         created_at: new Date(),
         updated_at: new Date(),
       },

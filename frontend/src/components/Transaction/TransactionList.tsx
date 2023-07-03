@@ -207,7 +207,7 @@ export default function StickyHeadTable({ filters }: ComponentProps) {
                           <TableCell key="amount" align="right">
                             <Typography
                               style={{
-                                color: row['type'] === 'EXPENSE' ? 'darkred' : 'darkgreen',
+                                color: row['type'] === 'EXPENSE' ? 'firebrick' : 'darkgreen',
                                 fontWeight: 'bold',
                               }}
                             >
