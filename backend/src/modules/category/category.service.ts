@@ -75,7 +75,13 @@ export class CategoryService {
 
     const categoriesSummary = new Map<
       string,
-      { amount: number; balance: number; description: string }
+      {
+        amount: number;
+        balance: number;
+        description: string;
+        icon: string;
+        color: string;
+      }
     >();
 
     for (const category of categories) {
@@ -91,6 +97,8 @@ export class CategoryService {
         amount: category.transactions.length,
         balance,
         description: category.description,
+        icon: category.icon,
+        color: category.color,
       });
     }
 

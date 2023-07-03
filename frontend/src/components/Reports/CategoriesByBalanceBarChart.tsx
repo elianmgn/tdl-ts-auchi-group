@@ -7,10 +7,13 @@ interface TransactionSummary {
     amount: number;
     balance: number;
     description: string;
+    icon: string;
+    color: string;
   };
 }
 
 export default function CategoriesByBalanceBarChart() {
+  const [chartCategoriesColor, setChartCategoriesColor] = useState<string[]>([]);
   const [chartCategories, setChartCategories] = useState<string[]>([]);
   const [chartSeries, setChartSeries] = useState<number[]>([]);
   const [transactionSummary, setTransactionSummary] = useState<TransactionSummary>({});
@@ -38,14 +41,18 @@ export default function CategoriesByBalanceBarChart() {
     const balanceData = generateBalanceData();
     const categories = balanceData.map((data) => data.category);
     const amounts = balanceData.map((data) => data.balance);
+    const categoriesColor = balanceData.map((data) => data.color);
     setChartCategories(categories);
     setChartSeries(amounts);
+    setChartCategoriesColor(categoriesColor);
   }, [transactionSummary]);
 
   const generateBalanceData = () => {
-    return Object.entries(transactionSummary).map(([category, { balance }]) => ({
+    return Object.entries(transactionSummary).map(([category, { balance, icon, color }]) => ({
       category,
       balance,
+      icon,
+      color
     }));
   };
 
@@ -67,6 +74,7 @@ export default function CategoriesByBalanceBarChart() {
         rotate: 0,
       },
     },
+    colors: chartCategoriesColor,
     labels: chartCategories,
     legend: {
       labels: {
