@@ -10,13 +10,71 @@ import {
 import Chart from 'react-apexcharts';
 import type { ApexOptions } from 'apexcharts';
 
-const GetCategories = async () => {
-  // Fetch categories from API
+const generateRandomColors = (quantity: number): string[] => {
+  const colors: string[] = [];
+
+  for (let i = 0; i < quantity; i++) {
+    const color = generateRandomColor();
+    colors.push(color);
+  }
+
+  return colors;
 };
 
+const generateRandomColor = (): string => {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+
+  return color;
+};
+
+const GetCategories = async () => {
+  // Fetch categories from API
+  try {
+    const url = `http://localhost:8080/categories`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const categoriesData = await response.json();
+    console.log('categoriesData: ', categoriesData);
+    return categoriesData
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
+};
+
+const GetExpenditureTransactions = async () => {
+    const url = `http://localhost:8080/transactions/admin?type=EXPENSE`
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const transactionsData = await response.json();;
+    return transactionsData;
+  };
+
 export default function PieChart() {
-  const [chartCategories, setChartCategories] = React.useState(['Categoria 1', 'Categoria 2', 'Categoria 3', 'Categoria 4']);
-  const [chartSeries, setChartSeries] = React.useState([10, 20, 25, 45]);
+  const [chartCategories, setChartCategories] = React.useState([{name: 'Loading', description: 'Loading', expenditures: 0, variance: '0%'}]);
+  const [chartSeries, setChartSeries] = React.useState([10]);
+
+  React.useEffect(() => {
+    GetCategories().then((data) => {
+      const categories: { name: string, description: string, expenditures: number, variance: string }[] = data.map((category: any) => {
+        return ({name: category.name, description: category.description, expenditures: 1, variance: '0%'})
+      });
+      setChartCategories(categories);
+    });
+  }, []);
 
   const chartOptions: ApexOptions = {
     chart: {
@@ -33,7 +91,7 @@ export default function PieChart() {
         }
       }
     },
-    colors: ['#ff9900', '#1c81c2', '#333', '#5c6ac0'],
+    colors: generateRandomColors(chartCategories.length),
     dataLabels: {
       enabled: true,
       formatter: function (val) {
@@ -70,7 +128,7 @@ export default function PieChart() {
     fill: {
       opacity: 1
     },
-    labels: chartCategories,
+    labels: chartCategories.map((category) => (category.name)),
     legend: {
       labels: {
         colors: '#FFFFFF'
@@ -86,6 +144,11 @@ export default function PieChart() {
       <Grid container>
         <Box py={4} pr={4} flex={1}>
           <Grid container>
+            <Grid item xs={12} marginLeft={5}>
+              <Typography variant="h4" noWrap fontFamily="Segoe UI" fontWeight={100}>
+                Expenditure
+              </Typography>
+            </Grid>
             <Grid
                 sm={5}
                 item
@@ -96,7 +159,7 @@ export default function PieChart() {
                 <Chart
                 height={300}
                 options={chartOptions}
-                series={chartSeries}
+                series={chartCategories.map((category) => (category.expenditures))}
                 type="donut"
                 />
             </Grid>
@@ -108,23 +171,22 @@ export default function PieChart() {
                 }}
               >
                 {
-                  chartCategories.map((category, index) => {
-                    return(
+                  chartCategories.map((category, index) => (
                       <ListItem disableGutters key={index}>
                         <ListItemText
-                          primary={category}
+                          primary={category.name}
                           primaryTypographyProps={{ variant: 'h5', noWrap: true, fontFamily: "Segoe UI", fontWeight: 100 }}
-                          secondary={'Detalle de la ' + category}
+                          secondary={category.description}
                           secondaryTypographyProps={{ noWrap: true, fontFamily: "Segoe UI", fontWeight: 200 }}
                         />
                         <Box>
                           <Typography align="right" variant="h4" noWrap fontFamily="Segoe UI" fontWeight={100}>
-                            + 20%
+                            {category.variance}
                           </Typography>
                         </Box>
                       </ListItem>
                     )
-                  })
+                  )
                 }
               </List>
             </Grid>
