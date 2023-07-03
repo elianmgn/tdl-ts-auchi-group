@@ -60,13 +60,13 @@ const formSchema = object({
 });
 
 type RegisterInput = TypeOf<typeof formSchema>;
-interface ComponenteProps {
+interface ComponentProps {
   open: boolean;
   handleClose: () => void;
   transactionInfo?: TransactionEntity | null;
 }
 
-const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transactionInfo }) => {
+function TransactionForm({ open, handleClose, transactionInfo }: ComponentProps) {
   const [loading, setLoading] = useState(false);
   const [alertInfo, setAlertInfo] = useState({ open: false, error: false, message: '' });
   const [categories, setCategories] = useState<typeof CategoryEntity[]>([]); 
@@ -110,8 +110,12 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
           body: JSON.stringify(values),
         });
       } else {
+        console.log(values);
         response = await fetch(`http://localhost:8080/transactions/${transactionInfo.id}`, {
           method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify(values),
         });
       }
@@ -190,6 +194,40 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
     }
   };
 
+    const handleDelete = () => {
+      setLoading(true);
+      fetch(`http://localhost:8080/transactions/${transactionInfo?.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => {
+          setLoading(false);
+          if (!response.ok) {
+            // Si la respuesta no es exitosa, lanza un error
+            throw new Error('Error al obtener los datos de la API');
+          }
+
+          setAlertInfo({
+            open: true,
+            error: false,
+            message: 'The transaction was deleted successfully.',
+          });
+          handleClose();
+          resetValues();
+        })
+        .catch((error) => {
+          setAlertInfo({
+            open: true,
+            error: true,
+            message: 'There was an error with the request.',
+          });
+          setLoading(false);
+          console.error('Error:', error);
+        });
+    };
+
   return (
     <div>
       <Snackbar
@@ -202,7 +240,7 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
           {alertInfo['message']}
         </Alert>
       </Snackbar>
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle>Transaction</DialogTitle>
         <DialogContent>
           <Box
@@ -255,40 +293,40 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
                 className="toggle-button-group"
               >
                 <ToggleButton value="INCOME" aria-label="income">
-                  <AddIcon />
+                  <AddIcon /> Income
                 </ToggleButton>
                 <ToggleButton value="EXPENSE" aria-label="expense">
-                  <RemoveIcon />
-                </ToggleButton>
-              </ToggleButtonGroup>
-
-              {/* Payment Method Input */}
-              <ToggleButtonGroup
-                color="primary"
-                value={watch('paymentMethod')}
-                exclusive
-                onChange={(_: React.MouseEvent<HTMLElement>, value: string) => {
-                  if (value !== null) {
-                    setValue('paymentMethod', value);
-                  }
-                }}
-                aria-label="paymentMethod"
-                className="toggle-button-group"
-              >
-                <ToggleButton value="CASH" aria-label="cash">
-                  <LocalAtmIcon />
-                </ToggleButton>
-                <ToggleButton value="CREDIT-CARD" aria-label="credit card">
-                  <CreditCardIcon />
-                </ToggleButton>
-                <ToggleButton value="TRANSFER" aria-label="transfer">
-                  <AccountBalanceIcon />
-                </ToggleButton>
-                <ToggleButton value="OTHER" aria-label="other">
-                  <MoreHorizIcon />
+                  <RemoveIcon /> Expense
                 </ToggleButton>
               </ToggleButtonGroup>
             </div>
+            {/* Payment Method Input */}
+            <ToggleButtonGroup
+              fullWidth
+              color="primary"
+              value={watch('paymentMethod')}
+              exclusive
+              onChange={(_: React.MouseEvent<HTMLElement>, value: string) => {
+                if (value !== null) {
+                  setValue('paymentMethod', value);
+                }
+              }}
+              aria-label="paymentMethod"
+              className="toggle-button-group"
+            >
+              <ToggleButton value="CASH" aria-label="cash">
+                <LocalAtmIcon style={{ marginRight: 5 }} /> Cash
+              </ToggleButton>
+              <ToggleButton value="CREDIT-CARD" aria-label="credit card">
+                <CreditCardIcon style={{ marginRight: 5 }} /> Credit Card
+              </ToggleButton>
+              <ToggleButton value="TRANSFER" aria-label="transfer">
+                <AccountBalanceIcon style={{ marginRight: 5 }} /> Transfer
+              </ToggleButton>
+              <ToggleButton value="OTHER" aria-label="other">
+                <MoreHorizIcon style={{ marginRight: 5 }} /> Other
+              </ToggleButton>
+            </ToggleButtonGroup>
 
             {/* Category Input */}
             <FormControl fullWidth error={!!errors['category']} required>
@@ -298,10 +336,9 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
                 labelId="category-label"
                 id="category-input"
                 label="Category"
-                defaultValue=""
                 {...register('category')}
               >
-                {categories.map((category: typeof CategoryEntity) => ( 
+                {categories.map((category: typeof CategoryEntity) => (
                   <MenuItem key={category.id} value={category.id?.toString()}>
                     {category.name}
                   </MenuItem>
@@ -332,6 +369,12 @@ const TransactionForm: React.FC<ComponenteProps> = ({ open, handleClose, transac
           </Box>
         </DialogContent>
         <DialogActions>
+          {transactionInfo && (
+            <Button color="error" onClick={handleDelete}>
+              Delete
+            </Button>
+          )}
+          <div style={{ flex: '1 0 0' }} />
           <Button onClick={handleClose}>Cancel</Button>
           <LoadingButton onClick={handleSubmit(onSubmitHandler)} type="submit" loading={loading}>
             Save

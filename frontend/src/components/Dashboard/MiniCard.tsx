@@ -1,10 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
-import {
-  Card,
-  Grid,
-  Typography,
-} from '@mui/material';
+import { Card, Grid, Typography } from '@mui/material';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 type MiniCardProps = {
@@ -15,28 +11,28 @@ type MiniCardProps = {
 
 export default function MiniCard(props: MiniCardProps): React.ReactElement {
   const { balance, currencyName, currencyValue } = props;
-  const value = parseFloat(currencyValue.replace(',','.'));
+  const value = parseFloat(currencyValue.replace(',', '.'));
 
-  return(
+  return (
     <Card sx={{ backgroundColor: '#f5f7ff', padding: 2 }}>
       <Grid container>
-        <Grid item display='flex' alignItems='center'>
+        <Grid item display="flex" alignItems="center">
           <AttachMoneyIcon />
-          <Typography fontFamily='Segoe UI' fontSize={20}>
+          <Typography fontFamily="Noto Sans" fontSize={20}>
             {(balance / value).toFixed(2)}
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <Typography fontFamily='Segoe UI' fontStyle='italic'>
+          <Typography fontFamily="Noto Sans" fontStyle="italic">
             {currencyName}
           </Typography>
         </Grid>
         <Grid item>
-          <Typography fontFamily='Segoe UI' fontSize={12}>
+          <Typography fontFamily="Noto Sans" fontSize={12}>
             1 USD = {value} ARS
           </Typography>
         </Grid>
       </Grid>
     </Card>
-  )
+  );
 }

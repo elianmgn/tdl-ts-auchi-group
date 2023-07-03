@@ -51,13 +51,13 @@ export class TransactionController {
     transaction['category'] = await this.categoryService.findCategoryById(
       categoryId,
     );
-    transaction['paymentMethod'] = transaction.payment_method;
+    transaction['paymentMethod'] = transaction.paymentMethod;
     return this.transactionService.addUserTransaction(username, transaction);
   }
 
   @Put(':id')
   updateUserTransaction(@Param('id') id: number, @Body() transaction) {
-    transaction['paymentMethod'] = transaction.payment_method;
+    transaction['paymentMethod'] = transaction.paymentMethod;
     return this.transactionService.updateUserTransaction(transaction, id);
   }
 
