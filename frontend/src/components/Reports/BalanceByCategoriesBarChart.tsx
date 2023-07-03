@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts';
 import type { ApexOptions } from 'apexcharts';
+import TransactionEntity from '../../models/TransactionEntity';
+import categoryEntity from '../../models/CategoryEntity';
+import { noDuplicateCategories } from './CategoriesList';
 
 interface TransactionSummary {
   [category: string]: {
@@ -10,50 +13,41 @@ interface TransactionSummary {
     icon: string;
     color: string;
   };
-}
+};
 
-export default function CategoriesByBalanceBarChart() {
+type BarChartProps = {
+  transactions: TransactionEntity[];
+};
+
+export default function BalanceByCategoriesBarChart(props: BarChartProps) {
+  const { transactions } = props;
   const [chartCategoriesColor, setChartCategoriesColor] = useState<string[]>([]);
   const [chartCategories, setChartCategories] = useState<string[]>([]);
   const [chartSeries, setChartSeries] = useState<number[]>([]);
-  const [transactionSummary, setTransactionSummary] = useState<TransactionSummary>({});
 
   useEffect(() => {
-    fetchTransactionSummary();
-  }, []);
-
-  const fetchTransactionSummary = async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/categories/transaction-summary`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const transactionSummary = await response.json();
-      setTransactionSummary(transactionSummary);
-    } catch (error) {
-      console.error('Error fetching transaction summary:', error);
-    }
-  };
-
-  useEffect(() => {
-    const balanceData = generateBalanceData();
+    const balanceData = generateBalanceData(transactions);
     const categories = balanceData.map((data) => data.category);
     const amounts = balanceData.map((data) => data.balance);
     const categoriesColor = balanceData.map((data) => data.color);
     setChartCategories(categories);
     setChartSeries(amounts);
     setChartCategoriesColor(categoriesColor);
-  }, [transactionSummary]);
+  }, []);
 
-  const generateBalanceData = () => {
-    return Object.entries(transactionSummary).map(([category, { balance, icon, color }]) => ({
-      category,
-      balance,
-      icon,
-      color
-    }));
+  const generateBalanceData = (transactions: TransactionEntity[]) => {
+    const results: { category: string, balance: number, icon: string, color: string }[] = [];
+    const categoriesInTransactions = transactions.map((transaction: TransactionEntity) => transaction.category);
+    const categoriesInTransactionsNoDuplicates = noDuplicateCategories(categoriesInTransactions);
+    categoriesInTransactionsNoDuplicates.forEach((category) => {
+      const transactionsInCategory = transactions.filter((transaction: TransactionEntity) => transaction.category.id === category.id);
+      const balance = transactionsInCategory.reduce((sum: number, transaction: TransactionEntity) => sum + transaction.amount, 0);
+      const icon = category.icon;
+      const color = category.color;
+      results.push({ category: category.name, balance, icon, color });
+    });
+    
+    return results;
   };
 
   const chartOptions: ApexOptions = {

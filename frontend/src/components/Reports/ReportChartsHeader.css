@@ -1,0 +1,17 @@
+.header-container {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    padding: 15px;
+    padding-left: 20px;
+}
+
+.filter-container {
+    padding-left: 20px;
+    display: flex;
+    flex: 9;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+}
