@@ -18,14 +18,14 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import { LoadingButton } from '@mui/lab';
 
-import { AuthContext } from '../../contexts/AuthContext';
+import { UserContext } from '../../contexts/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { object, string, TypeOf } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const formSchema = object({
-  email: string().email().nonempty('Email is required'),
+  username: string().nonempty('Username is required'),
   password: string().nonempty('Password is required'),
 });
 
@@ -33,7 +33,7 @@ type RegisterInput = TypeOf<typeof formSchema>;
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  const { login } = useContext(UserContext);
 
   const [loading, setLoading] = useState(false);
   const [alertInfo, setAlertInfo] = useState({ open: false, error: false, message: '' });
@@ -71,34 +71,23 @@ const LoginForm: React.FC = () => {
 
   // Handle Submit
   const onSubmitHandler: SubmitHandler<RegisterInput> = (values) => {
-    console.log('Values:');
     logUserIn(values);
-    console.log(values);
   };
 
   async function logUserIn(values: RegisterInput) {
     setLoading(true);
-    try {
-      const response = await login(values.email, values.password);
-
-      //   if (!response.ok) {
-      //     // Si la respuesta no es exitosa, lanza un error
-      //     throw new Error('Error al obtener los datos de la API');
-      //   }
-
-      // const data = await response.json();
-
-      //   setLoading(false);
+    login(values.username, values.password).then(() => {
+      setLoading(false);
       setAlertInfo({
         open: true,
         error: false,
         message: 'The transaction was saved successfully.',
       });
-    } catch (error) {
+    }).catch((error) => {
       setAlertInfo({ open: true, error: true, message: 'There was an error with the request.' });
       setLoading(false);
       console.error('Error:', error);
-    }
+    });
   }
 
   useEffect(() => {
@@ -125,14 +114,14 @@ const LoginForm: React.FC = () => {
         onSubmit={handleSubmit(onSubmitHandler)}
         className="form-container"
       >
-        {/* Email Input */}
+        {/* Username Input */}
         <TextField
-          label="Email"
+          label="Username"
           fullWidth
           required
-          error={!!errors['email']}
-          helperText={errors['email'] ? errors['email'].message : ''}
-          {...register('email')}
+          error={!!errors['username']}
+          helperText={errors['username'] ? errors['username'].message : ''}
+          {...register('username')}
         />
         {/* Password Input */}
         <FormControl variant="outlined" required fullWidth error={!!errors['password']}>

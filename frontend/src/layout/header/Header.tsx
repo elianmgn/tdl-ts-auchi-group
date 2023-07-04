@@ -12,14 +12,13 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
 import budgetifyLogo from '../../assets/images/logo.svg';
+import { UserContext } from '../../contexts/UserContext';
 import './Header.css';
 
-
 const pages = ['Dashboard', 'Transactions', 'Categories', 'Reports'];
-const settings = ['Profile', 'Account', 'Logout'];
 
 export default function Header() {
-  
+  const { logout, currentUser } = React.useContext(UserContext);
   const navigate = useNavigate();
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -32,13 +31,17 @@ export default function Header() {
     setAnchorElUser(null);
   };
 
+  const handleLogout = () => {
+    logout();
+    handleCloseUserMenu();
+  }
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <div className='header-app-container'>
+          <div className="header-app-container">
             <img src={budgetifyLogo} alt="Logo" className="app-logo" />
-            <p className='app-name'>BUDGETIFY</p>
+            <p className="app-name">BUDGETIFY</p>
           </div>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
@@ -54,7 +57,7 @@ export default function Header() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt={currentUser?.firstName} src="/static/images/avatar/2.jpg" />
               </IconButton>
             </Tooltip>
             <Menu
@@ -73,15 +76,13 @@ export default function Header() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
+              <MenuItem key="logout" onClick={handleLogout}>
+                <Typography textAlign="center">Logout</Typography>
+              </MenuItem>
             </Menu>
           </Box>
         </Toolbar>
       </Container>
     </AppBar>
-  )
+  );
 }

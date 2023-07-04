@@ -26,6 +26,7 @@ import dayjs from 'dayjs';
 
 import { Icon } from '@material-ui/core';
 import TransactionForm from './TransactionForm';
+import useApiService from '../../services/apiService';
 
 interface Column {
   id: 'description' | 'category' | 'date' | 'amount' | 'paymentMethod';
@@ -62,6 +63,7 @@ type ComponentProps = {
 };
 
 export default function StickyHeadTable({ filters }: ComponentProps) {
+  const { getUserTransactions } = useApiService();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [transactions, setTrasactions] = React.useState<TransactionEntity[]>([]);
@@ -88,15 +90,7 @@ export default function StickyHeadTable({ filters }: ComponentProps) {
   };
 
   const fetchTransactions = async () => {
-    const params = new URLSearchParams(filters).toString();
-    const url = `http://localhost:8080/transactions/admin?${params}`;
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const transactionsData = await response.json();
+    const transactionsData = await getUserTransactions(filters);
     sortTransactionsByCreationDate(transactionsData);
   };
 

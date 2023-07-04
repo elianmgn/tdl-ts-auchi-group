@@ -27,6 +27,7 @@ import CategoryEntity from '../../models/CategoryEntity';
 import ICONS from '../../utils/IconsEnum';
 import COLORS from '../../utils/ColorsEnum';
 import { Icon } from '@material-ui/core';
+import useApiService from '../../services/apiService';
 
 const formSchema = object({
   name: string().nonempty('Name is required').max(32, 'Name must be less than 32 characters'),
@@ -44,6 +45,7 @@ interface ComponenteProps {
 }
 
 const CategoryForm: React.FC<ComponenteProps> = ({ open, handleClose, categoryInfo }) => {
+  const { postUserCategory, putUserCategory, deleteUserCategory } = useApiService();
   const [loading, setLoading] = useState(false);
   const [alertInfo, setAlertInfo] = useState({ open: false, error: false, message: '' });
 
@@ -76,23 +78,11 @@ const CategoryForm: React.FC<ComponenteProps> = ({ open, handleClose, categoryIn
     setLoading(true);
     try {
       let response;
-      if (!categoryInfo) {
-        response = await fetch('http://localhost:8080/categories/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(values),
-        });
+      if (categoryInfo) {
+        const categoryId = categoryInfo?.id?.toString() || '';
+        response = await putUserCategory(categoryId, JSON.stringify(values));
       } else {
-        console.log(values);
-        response = await fetch(`http://localhost:8080/categories/${categoryInfo.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(values),
-        });
+        response = await postUserCategory(JSON.stringify(values));
       }
 
       if (!response.ok) {
@@ -137,12 +127,7 @@ const CategoryForm: React.FC<ComponenteProps> = ({ open, handleClose, categoryIn
 
   const handleDelete = () => {
     setLoading(true);
-    fetch(`http://localhost:8080/categories/${categoryInfo?.id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
+    deleteUserCategory(categoryInfo?.id?.toString() || '')
       .then((response) => {
         setLoading(false);
         if (!response.ok) {

@@ -21,6 +21,7 @@ import dayjs from 'dayjs';
 
 import CategoryForm from './CategoryForm';
 import CategoryEntity from '../../models/CategoryEntity';
+import useApiService from '../../services/apiService';
 
 interface Column {
   id: 'description' | 'name' | 'createdAt';
@@ -46,6 +47,7 @@ type ComponentProps = {
 };
 
 export default function StickyHeadTable({ filters }: ComponentProps) {
+  const { getUserCategories } = useApiService();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [categories, setCategories] = React.useState<(typeof CategoryEntity)[]>([]);
@@ -72,15 +74,7 @@ export default function StickyHeadTable({ filters }: ComponentProps) {
   };
 
   const fetchCategories = async () => {
-    const params = new URLSearchParams(filters).toString();
-    const url = `http://localhost:8080/categories/?${params}`;
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const categoriesData: (typeof CategoryEntity)[] = await response.json();
+    const categoriesData: (typeof CategoryEntity)[] = await getUserCategories(filters);
     sortCategoriesByCreationDate(categoriesData, ascendingDateSort);
   };
 

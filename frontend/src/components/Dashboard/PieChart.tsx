@@ -14,66 +14,41 @@ import { Icon } from '@material-ui/core';
 import Chart from 'react-apexcharts';
 import type { ApexOptions } from 'apexcharts';
 import CategoryEntity from '../../models/CategoryEntity';
+import TransactionEntity from '../../models/TransactionEntity';
+import useApiService from '../../services/apiService';
 
-const GetCategories = async () => {
-  // Fetch categories from API
-  try {
-    const url = `http://localhost:8080/categories`;
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const categoriesData = await response.json();
-    console.log('categoriesData: ', categoriesData);
-    return categoriesData;
-  } catch (e) {
-    console.error(e);
-    return [];
-  }
-};
-
-const GetExpenditureTransactions = async () => {
+const GetExpenditureTransactions = async (
+  getUserTransactions: (params: Record<string, string>) => Promise<TransactionEntity[]>,
+) => {
   const today = new Date();
   const year = today.getFullYear();
   const month = (today.getMonth() + 1).toString().padStart(2, '0');
   const formattedDate = `${year}-${month}-01`;
-
-  const url = `http://localhost:8080/transactions/admin?type=EXPENSE&dateFrom=${formattedDate}`;
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  const transactionsData = await response.json();
-  console.log('Transactions from this month: ', transactionsData);
-  return transactionsData;
+  return getUserTransactions({ type: 'EXPENSE', dateFrom: formattedDate });
 };
 
 export default function PieChart() {
+  const { getUserCategories, getUserTransactions } = useApiService();
   const [chartCategories, setChartCategories] = React.useState([
     { name: 'Loading', description: 'Loading', color: 'black', icon: 'category', expenditure: 0 },
   ]);
   const [totalExpenditure, setTotalExpenditure] = React.useState(0);
 
   React.useEffect(() => {
-    GetCategories().then(async (data) => {
-      console.log('DATA CATEGORIES:', data);
+    getUserCategories().then(async (data) => {
       const categories = data.map((category: typeof CategoryEntity) => ({
         name: category.name,
         description: category.description,
         color: category.color,
         icon: category.icon,
       }));
-      GetExpenditureTransactions().then((transactions) => {
+      GetExpenditureTransactions(getUserTransactions).then((transactions) => {
         const categoriesWithExpenditures = categories.map((category: typeof CategoryEntity) => {
           // Get this month's transactions for this category
           const transactionsForCategory = transactions.filter(
             (transaction: any) => transaction.category.name === category.name,
-            );
-            // Get total expenditure for this category
+          );
+          // Get total expenditure for this category
           const totalExpenditureForCategory = transactionsForCategory.reduce(
             (sum: number, transaction: any) => sum + transaction.amount,
             0,
@@ -89,7 +64,6 @@ export default function PieChart() {
         setChartCategories(categoriesWithExpenditures);
       });
     });
-    GetExpenditureTransactions();
   }, []);
 
   const chartOptions: ApexOptions = {
@@ -183,7 +157,7 @@ export default function PieChart() {
               {chartCategories.map((category, index) => (
                 <ListItem disableGutters key={index}>
                   <ListItemIcon>
-                    <Icon style={{color: category.color, fontSize: 45}}>{category.icon}</Icon>
+                    <Icon style={{ color: category.color, fontSize: 45 }}>{category.icon}</Icon>
                   </ListItemIcon>
                   <ListItemText
                     primary={category.name}

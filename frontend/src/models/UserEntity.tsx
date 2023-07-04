@@ -5,7 +5,7 @@ export type UserEntity = {
   lastName: string;
   email: string;
   username: string;
-  password: string;
-  userToken?: string;
-  profileUrl?: string;
+  firstname: string;
+  lastname: string;
+  access_token: string;
 };
