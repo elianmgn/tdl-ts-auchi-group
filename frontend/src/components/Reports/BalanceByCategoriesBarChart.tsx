@@ -2,18 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts';
 import type { ApexOptions } from 'apexcharts';
 import TransactionEntity from '../../models/TransactionEntity';
-import categoryEntity from '../../models/CategoryEntity';
 import { noDuplicateCategories } from './CategoriesList';
-
-interface TransactionSummary {
-  [category: string]: {
-    amount: number;
-    balance: number;
-    description: string;
-    icon: string;
-    color: string;
-  };
-};
 
 type BarChartProps = {
   transactions: TransactionEntity[];

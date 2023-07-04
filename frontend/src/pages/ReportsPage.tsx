@@ -4,6 +4,7 @@ import TransactionsByCategoryBarChart from '../components/Reports/TransactionsBy
 import BalanceByCategoriesBarChart from '../components/Reports/BalanceByCategoriesBarChart';
 import CategoriesList from '../components/Reports/CategoriesList';
 import ReportChartsHeader from '../components/Reports/ReportChartsHeader';
+import BalanceEvolutionLineChart from '../components/Reports/BalanceEvolutionLineChart';
 
 const ReportsPage = () => {
   // Get first day of current month, formatted as yyyy-mm-dd
@@ -101,6 +102,20 @@ const ReportsPage = () => {
                 Categories with transactions
               </Typography>
               <CategoriesList transactions={transactions}/>
+            </Grid>
+
+            <Grid item xs={6} sx={{ boxShadow: 2, borderRadius: 3, textAlign: 'center' }}>
+              <Typography
+                sx={{
+                  pb: 1,
+                  pt: 2
+                }}
+                variant="h4"
+                fontFamily="Segoe UI"
+              >
+                Balance evolution
+              </Typography>
+              <BalanceEvolutionLineChart transactions={transactions} filters={filters} />
             </Grid>
           </Grid>
         </div>

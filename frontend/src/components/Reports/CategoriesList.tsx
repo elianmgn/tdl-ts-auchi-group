@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Grid, ListItem, ListItemText, List, Box, ListItemIcon } from '@mui/material';
+import { Grid, ListItem, ListItemText, List, Box } from '@mui/material';
 import { Icon } from '@material-ui/core';
 import TransactionEntity from '../../models/TransactionEntity';
 import categoryEntity from '../../models/CategoryEntity';
