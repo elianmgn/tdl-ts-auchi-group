@@ -18,7 +18,7 @@ export class Category extends Model<Category> {
   @Column
   description: string;
 
-  @Column({ unique: true })
+  @Column
   name: string;
 
   @HasMany(() => Transaction)
