@@ -7,7 +7,18 @@ import { Transaction } from '../transaction/model';
 @Injectable()
 export class UserService {
   async findOneUserByUsername(username: string): Promise<User | undefined> {
-    return User.findOne({ where: { username: username } });
+    return User.findOne({
+      where: { username: username },
+    });
+  }
+
+  async findOneUserInfoByUsername(username: string): Promise<User | undefined> {
+    return User.findOne({
+      where: { username: username },
+      attributes: {
+        exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'],
+      },
+    });
   }
 
   async findOneUserByEmail(email: string): Promise<User | undefined> {
@@ -24,6 +35,14 @@ export class UserService {
     const hashedUser = userDto;
     hashedUser.password = hashSync(password);
     return User.create(hashedUser);
+  }
+
+  async getUserInfo(username: string): Promise<any> {
+    const user = await this.findOneUserInfoByUsername(username);
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    return user;
   }
 
   async getUserBalance(

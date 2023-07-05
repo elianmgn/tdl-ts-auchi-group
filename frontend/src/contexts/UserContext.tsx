@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useRef } from 'react';
 import { BrowserRouterProps } from 'react-router-dom';
 import useLocalStorage from '../services/localStorageService';
+import useApiService from '../services/apiService';
 import { UserEntity } from '../models/UserEntity';
 import jwtDecode from 'jwt-decode';
 
@@ -10,52 +11,67 @@ type JWTToken = {
   foo: string;
   exp: number;
   iat: number;
-}
+};
 
 // Define el tipo de contexto
 type UserContextType = {
   currentUser: UserEntity | null;
-  login: (username: string, password: string) => Promise<Response>;
-  register: (email: string, password: string, name: string) => void;
-  logout: () => void;
+  userToken: string | null;
   isLoading: boolean;
+  login: (username: string, password: string) => void;
+  signup: (
+    username: string,
+    password: string,
+    email: string,
+    firstName: string,
+    lastName: string,
+  ) => void;
+  logout: () => void;
 };
 
 // Crea el contexto de autenticación
 export const UserContext = createContext<UserContextType>({
   currentUser: null,
+  userToken: null,
+  isLoading: false,
   login: async () => {
-    return new Promise(() => {
-      // Do nothing
-    });
+    // Do nothing
   },
-  register: () => {
+  signup: () => {
     // Do nothing
   },
   logout: () => {
     // Do nothing
   },
-  isLoading: false,
 });
 
 // Crea el componente proveedor del contexto
 export const UserProvider: React.FC<BrowserRouterProps> = ({ children }) => {
   const { setItem, getItem, removeItem } = useLocalStorage();
-
+  const { loginUser, registerUser } = useApiService();
   const [isLoading, setIsLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<UserEntity | null>(null);
+  const [userToken, setUserToken] = useState<string | null>(null);
 
   const tokenTimerIdRef = useRef<NodeJS.Timeout | null>(null);
 
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   const user = getItem('user');
+  //   if (user) {
+  //     setCurrentUser(JSON.parse(user));
+  //   }
+  //   setIsLoading(false);
+  // }, []);
 
   useEffect(() => {
-    setIsLoading(true);
-    const user = getItem('user');
-    if (user) {
-      setCurrentUser(JSON.parse(user));
-    }
-    setIsLoading(false);
-  }, []);
+    // Checks whether user is logged in when 'userToken' changes
+    isLoggedIn();
+
+    return () => {
+      clearTokenTimer();
+    };
+  }, [userToken]);
 
   function startTokenTimer(token: string) {
     clearTokenTimer();
@@ -88,32 +104,59 @@ export const UserProvider: React.FC<BrowserRouterProps> = ({ children }) => {
     }
   }
 
+  const isLoggedIn = async () => {
+    setIsLoading(true);
+    try {
+      const retrievedUserToken = getItem('userToken');
+      const user = getItem('currentUser');
+
+      if (retrievedUserToken && user) {
+        setUserToken(retrievedUserToken);
+        setCurrentUser(JSON.parse(user));
+      } else {
+        logout();
+        clearTokenTimer();
+      }
+
+      setIsLoading(false);
+    } catch (e) {
+      console.error(`<isLoggedIn in error> ${e}`);
+      logout();
+    }
+  };
+
   // Función de inicio de sesión
   const login = async (username: string, password: string) => {
     setIsLoading(true);
     // Lógica de autenticación
-    const url = `http://localhost:8080/auth/login`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username, password }),
-    });
-    const userData: UserEntity = await response.json();
-
+    const userData = await loginUser(username, password);
+    if (!userData) {
+      setIsLoading(false);
+      return;
+    }
     setCurrentUser(userData);
     startTokenTimer(userData.access_token);
-    setItem('user', JSON.stringify(userData));
+    setItem('userToken', JSON.stringify(userData.access_token));
+    setItem('currentUser', JSON.stringify(userData));
     setIsLoading(false);
-    return response;
   };
 
   // Función de registro
-  const register = (username: string, password: string) => {
+  const signup = async (
+    username: string,
+    password: string,
+    email: string,
+    firstName: string,
+    lastName: string,
+  ) => {
     setIsLoading(true);
-    // Lógica de registro (puede ser una solicitud a la API, etc.)
-
+    // Lógica de registro
+    const userData = await registerUser(username, password, email, firstName, lastName);
+    console.log(userData);
+    if (!userData) {
+      setIsLoading(false);
+      return;
+    }
     login(username, password);
   };
 
@@ -122,13 +165,14 @@ export const UserProvider: React.FC<BrowserRouterProps> = ({ children }) => {
     setIsLoading(true);
     clearTokenTimer();
     setCurrentUser(null);
-    removeItem('user');
+    removeItem('userToken');
+    removeItem('currentUser');
     setIsLoading(false);
   };
 
   return (
     <>
-      <UserContext.Provider value={{ currentUser, login, logout, register, isLoading }}>
+      <UserContext.Provider value={{ currentUser, userToken, isLoading, login, logout, signup }}>
         {children}
       </UserContext.Provider>
     </>

@@ -6,6 +6,11 @@ import { User } from './model';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Get(':username')
+  getUserInfo(@Param('username') username: string): Promise<User> {
+    return this.userService.getUserInfo(username);
+  }
+
   @Get('balance/:username')
   getUserBalance(
     @Param('username') username: string,

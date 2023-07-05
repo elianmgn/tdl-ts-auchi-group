@@ -5,10 +5,58 @@ const API_URL = 'http://localhost:8080';
 
 const useApiService = () => {
   const { currentUser } = useContext(UserContext);
-  const accessToken = currentUser?.access_token;
+  console.log(currentUser);
   const headerConfig = {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${accessToken}`,
+    Authorization: `Bearer ${currentUser?.access_token}`,
+  };
+
+  const loginUser = async (username: string, password: string) => {
+    const url = `${API_URL}/auth/login`;
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+      if (!response.ok) {
+        return null;
+      }
+      const userData = await response.json();
+      return userData;
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const registerUser = async (
+    username: string,
+    password: string,
+    email: string,
+    firstName: string,
+    lastName: string,
+  ) => {
+    const url = `${API_URL}/user`;
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password, email, firstName, lastName }),
+      });
+      console.log(response);
+      if (!response.ok) {
+        return null;
+      }
+      const userData = await response.json();
+      console.log(userData);
+      return userData;
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const getUserBalance = async (params: Record<string, string> | null = null) => {
@@ -16,12 +64,11 @@ const useApiService = () => {
       params = {};
     }
     const qparams = new URLSearchParams(params).toString();
-    const url = `${API_URL}/user/balance/admin?${qparams}`;
+    const url = `${API_URL}/user/balance/${currentUser?.username}?${qparams}`;
     return await fetch(url, {
       method: 'GET',
       headers: headerConfig,
     });
-    // return generalResponse.json();
   };
 
   const getUserCategories = async (params: Record<string, string> | null = null) => {
@@ -82,7 +129,7 @@ const useApiService = () => {
     }
     const qparams = new URLSearchParams(params).toString();
 
-    const url = `${API_URL}/transactions/admin?${qparams}`;
+    const url = `${API_URL}/transactions/${currentUser?.username}?${qparams}`;
     const response = await fetch(url, {
       method: 'GET',
       headers: headerConfig,
@@ -93,7 +140,7 @@ const useApiService = () => {
 
   const postUserTransaction = async (body: string) => {
     // Post transaction to API and return response. Body is a JSON string.
-    const url = `${API_URL}/transactions/admin`;
+    const url = `${API_URL}/transactions/${currentUser?.username}`;
     const response = await fetch(url, {
       method: 'POST',
       headers: headerConfig,
@@ -124,6 +171,8 @@ const useApiService = () => {
   };
 
   return {
+    loginUser,
+    registerUser,
     getUserBalance,
     getUserCategories,
     postUserCategory,

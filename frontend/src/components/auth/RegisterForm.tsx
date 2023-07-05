@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import './LoginForm.css';
+import './RegisterForm.css';
 import {
   Box,
   FormHelperText,
@@ -25,15 +25,24 @@ import { object, string, TypeOf } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const formSchema = object({
-  username: string().nonempty('Username is required'),
-  password: string().nonempty('Password is required'),
+  username: string().nonempty('Username is required').min(3, 'Username must be at 3 char long'),
+  email: string().email().nonempty('Email is required'),
+  firstName: string()
+    .nonempty('First name is required')
+    .min(3, 'First name must be at 3 char long'),
+  lastName: string().nonempty('Last name is required').min(3, 'Last name must be at 3 char long'),
+  password: string().nonempty('Password is required').min(3, 'Password must be at 3 char long'),
+  confirmPwd: string(),
+}).refine((data) => data.password === data.confirmPwd, {
+  message: "Passwords don't match",
+  path: ['confirmPwd'],
 });
 
 type RegisterInput = TypeOf<typeof formSchema>;
 
-const LoginForm: React.FC = () => {
+const RegisterForm: React.FC = () => {
   const navigate = useNavigate();
-  const { login } = useContext(UserContext);
+  const { signup } = useContext(UserContext);
 
   const [loading, setLoading] = useState(false);
   const [alertInfo, setAlertInfo] = useState({ open: false, error: false, message: '' });
@@ -71,12 +80,12 @@ const LoginForm: React.FC = () => {
 
   // Handle Submit
   const onSubmitHandler: SubmitHandler<RegisterInput> = (values) => {
-    logUserIn(values);
+    signUserUp(values);
   };
 
-  async function logUserIn(values: RegisterInput) {
+  async function signUserUp(values: RegisterInput) {
     setLoading(true);
-    login(values.username, values.password);
+    signup(values.username, values.password, values.email, values.firstName, values.lastName);
     setLoading(false);
   }
 
@@ -109,6 +118,26 @@ const LoginForm: React.FC = () => {
           onSubmit={handleSubmit(onSubmitHandler)}
           className="form-container"
         >
+          <div style={{ display: 'flex', flexDirection: 'row', gap: 20 }}>
+            {/* First Name Input */}
+            <TextField
+              label="First Name"
+              fullWidth
+              required
+              error={!!errors['firstName']}
+              helperText={errors['firstName'] ? errors['firstName'].message : ''}
+              {...register('firstName')}
+            />
+            {/* Last Name Input */}
+            <TextField
+              label="Last Name"
+              fullWidth
+              required
+              error={!!errors['lastName']}
+              helperText={errors['lastName'] ? errors['lastName'].message : ''}
+              {...register('lastName')}
+            />
+          </div>
           {/* Username Input */}
           <TextField
             label="Username"
@@ -118,9 +147,18 @@ const LoginForm: React.FC = () => {
             helperText={errors['username'] ? errors['username'].message : ''}
             {...register('username')}
           />
+          {/* Email Input */}
+          <TextField
+            label="Email"
+            fullWidth
+            required
+            error={!!errors['email']}
+            helperText={errors['email'] ? errors['email'].message : ''}
+            {...register('email')}
+          />
           {/* Password Input */}
           <FormControl variant="outlined" required fullWidth error={!!errors['password']}>
-            <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+            <InputLabel htmlFor="outlined-adornment-password">Create password</InputLabel>
             <OutlinedInput
               id="outlined-adornment-password"
               type={showPassword ? 'text' : 'password'}
@@ -136,10 +174,36 @@ const LoginForm: React.FC = () => {
                   </IconButton>
                 </InputAdornment>
               }
-              label="Password"
+              label="Create password"
               {...register('password')}
             />
             <FormHelperText>{errors['password'] ? errors['password'].message : ''}</FormHelperText>
+          </FormControl>
+
+          {/* Confirm Password Input */}
+          <FormControl variant="outlined" required fullWidth error={!!errors['confirmPwd']}>
+            <InputLabel htmlFor="outlined-adornment-confirmPwd">Confirm password</InputLabel>
+            <OutlinedInput
+              id="outlined-adornment-confirmPwd"
+              type={showPassword ? 'text' : 'password'}
+              label="Confirm Password"
+              {...register('confirmPwd')}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+            <FormHelperText>
+              {errors['confirmPwd'] ? errors['confirmPwd'].message : ''}
+            </FormHelperText>
           </FormControl>
           <LoadingButton
             variant="contained"
@@ -147,22 +211,16 @@ const LoginForm: React.FC = () => {
             type="submit"
             loading={loading}
           >
-            Login
+            Signup
           </LoadingButton>
-          {/* <Button
-          onClick={() => navigate('/register')}
-          sx={{ my: 2, color: 'blue', display: 'block' }}
-        >
-          Register
-        </Button> */}
         </Box>
-        <p className="register-text" onClick={() => navigate('/register')}>
-          Not a member?<button>Signup</button>
+        <p className="register-text" onClick={() => navigate('/login')}>
+          Already have an account?<button>Login</button>
         </p>
       </div>
     </div>
   );
 };
 
-export default LoginForm;
+export default RegisterForm;
 // https://codevoweb.com/form-validation-react-hook-form-material-ui-react/
