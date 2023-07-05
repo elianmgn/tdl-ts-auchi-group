@@ -9,7 +9,7 @@ export default function DashboardPage() {
       <Grid item xs={12} sx={{ boxShadow: 2, borderRadius: 3 }}>
         <AccountBalance />
       </Grid>
-      <Grid item xs={10} sx={{ boxShadow: 2, borderRadius: 5 }}>
+      <Grid item xs={12} sx={{ boxShadow: 2, borderRadius: 5 }}>
         <PieChart />
       </Grid>
     </Grid>
