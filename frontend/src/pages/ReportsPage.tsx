@@ -12,7 +12,7 @@ const ReportsPage = () => {
   const year = today.getFullYear();
   const month = (today.getMonth() + 1).toString().padStart(2, '0');
   const firstMonthDayFormatted = `${year}-${month}-01`;
-  // Get last day of current month, formatted as yyyy-mm-dd
+  // Get tomorrow's date, formatted as yyyy-mm-dd, in order to include today's transactions
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
   const tomorrowDateFormatted = `${tomorrow.getFullYear()}-${(tomorrow.getMonth() + 1).toString().padStart(2, '0')}-${tomorrow.getDate().toString().padStart(2, '0')}`;
