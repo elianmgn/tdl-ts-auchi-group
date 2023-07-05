@@ -60,6 +60,7 @@ export default function PieChart() {
 
   React.useEffect(() => {
     GetCategories().then(async (data) => {
+      console.log('DATA CATEGORIES:', data);
       const categories = data.map((category: typeof CategoryEntity) => ({
         name: category.name,
         description: category.description,
