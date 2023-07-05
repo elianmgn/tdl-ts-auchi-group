@@ -1,3 +1,4 @@
+import { hashSync } from 'bcryptjs';
 import { QueryInterface } from 'sequelize';
 
 module.exports = {
@@ -8,7 +9,7 @@ module.exports = {
         last_name: 'User',
         email: 'admin@budgetify.com',
         username: 'admin',
-        password: 'admin',
+        password: hashSync('admin'),
       },
     ]);
   },

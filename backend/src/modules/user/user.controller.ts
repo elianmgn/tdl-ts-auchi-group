@@ -1,9 +1,15 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { UserService } from './user.service';
+import { User } from './model';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Get(':username')
+  getUserInfo(@Param('username') username: string): Promise<User> {
+    return this.userService.getUserInfo(username);
+  }
 
   @Get('balance/:username')
   getUserBalance(
@@ -15,5 +21,10 @@ export class UserController {
       dateFrom,
       dateTo,
     });
+  }
+
+  @Post()
+  createUser(@Body() user: User) {
+    return this.userService.createUser(user);
   }
 }

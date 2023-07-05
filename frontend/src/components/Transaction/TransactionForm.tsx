@@ -40,16 +40,20 @@ import dayjs from 'dayjs';
 
 import TransactionEntity from '../../models/TransactionEntity';
 import CategoryEntity from '../../models/CategoryEntity';
+import useApiService from '../../services/apiService';
 
 const formSchema = object({
   description: string()
     .nonempty('Name is required')
     .max(32, 'Name must be less than 32 characters'),
-  category: string().refine((value: unknown) => {
-    return typeof value === 'string' && value !== '';
-  }, {
-    message: 'Category is required',
-  }),
+  category: string().refine(
+    (value: unknown) => {
+      return typeof value === 'string' && value !== '';
+    },
+    {
+      message: 'Category is required',
+    },
+  ),
   type: string().nonempty('Type is required'),
   amount: number({
     required_error: 'Amount is required',
@@ -67,9 +71,11 @@ interface ComponentProps {
 }
 
 function TransactionForm({ open, handleClose, transactionInfo }: ComponentProps) {
+  const { postUserTransaction, putUserTransaction, deleteUserTransaction, getUserCategories } =
+    useApiService();
   const [loading, setLoading] = useState(false);
   const [alertInfo, setAlertInfo] = useState({ open: false, error: false, message: '' });
-  const [categories, setCategories] = useState<typeof CategoryEntity[]>([]); 
+  const [categories, setCategories] = useState<(typeof CategoryEntity)[]>([]);
 
   const {
     register,
@@ -79,7 +85,7 @@ function TransactionForm({ open, handleClose, transactionInfo }: ComponentProps)
     reset,
     handleSubmit,
   } = useForm<RegisterInput>({
-    resolver: zodResolver(formSchema)
+    resolver: zodResolver(formSchema),
   });
 
   const resetValues = () => {
@@ -101,23 +107,11 @@ function TransactionForm({ open, handleClose, transactionInfo }: ComponentProps)
     setLoading(true);
     try {
       let response;
-      if (!transactionInfo) {
-        response = await fetch('http://localhost:8080/transactions/admin', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(values),
-        });
+      if (transactionInfo) {
+        const transactionId = transactionInfo.id?.toString() || '';
+        response = await putUserTransaction(transactionId, JSON.stringify(values));
       } else {
-        console.log(values);
-        response = await fetch(`http://localhost:8080/transactions/${transactionInfo.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(values),
-        });
+        response = await postUserTransaction(JSON.stringify(values));
       }
 
       if (!response.ok) {
@@ -142,21 +136,10 @@ function TransactionForm({ open, handleClose, transactionInfo }: ComponentProps)
     }
   }
 
-  async function fetchCategories() {
-    const response = await fetch(`http://localhost:8080/categories`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const categoriesData = await response.json();
-    return categoriesData;
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const categoriesData = await fetchCategories();
+        const categoriesData = await getUserCategories();
         const formattedCategories = categoriesData.map((category: typeof CategoryEntity) => ({
           id: category.id?.toString(),
           name: category.name,
@@ -165,7 +148,7 @@ function TransactionForm({ open, handleClose, transactionInfo }: ComponentProps)
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
-  
+
       if (transactionInfo) {
         setValue('description', transactionInfo.description);
         setValue('category', transactionInfo.category?.id?.toString() ?? '');
@@ -178,55 +161,51 @@ function TransactionForm({ open, handleClose, transactionInfo }: ComponentProps)
       }
       setLoading(false);
     };
-  
+
     fetchData();
   }, [open]);
-  
 
   const onSubmitHandler: SubmitHandler<RegisterInput> = (values) => {
-    const selectedCategory = categories.find((category) => category.id !== undefined && category.id.toString() === values.category);
+    const selectedCategory = categories.find(
+      (category) => category.id !== undefined && category.id.toString() === values.category,
+    );
 
     if (selectedCategory) {
-      values.category = selectedCategory.id?.toString() || '';;
+      values.category = selectedCategory.id?.toString() || '';
       postNewTransaction(values);
     } else {
       setAlertInfo({ open: true, error: true, message: 'Please select a valid category.' });
     }
   };
 
-    const handleDelete = () => {
-      setLoading(true);
-      fetch(`http://localhost:8080/transactions/${transactionInfo?.id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then((response) => {
-          setLoading(false);
-          if (!response.ok) {
-            // Si la respuesta no es exitosa, lanza un error
-            throw new Error('Error al obtener los datos de la API');
-          }
+  const handleDelete = () => {
+    setLoading(true);
+    deleteUserTransaction(transactionInfo?.id?.toString() || '')
+      .then((response) => {
+        setLoading(false);
+        if (!response.ok) {
+          // Si la respuesta no es exitosa, lanza un error
+          throw new Error('Error al obtener los datos de la API');
+        }
 
-          setAlertInfo({
-            open: true,
-            error: false,
-            message: 'The transaction was deleted successfully.',
-          });
-          handleClose();
-          resetValues();
-        })
-        .catch((error) => {
-          setAlertInfo({
-            open: true,
-            error: true,
-            message: 'There was an error with the request.',
-          });
-          setLoading(false);
-          console.error('Error:', error);
+        setAlertInfo({
+          open: true,
+          error: false,
+          message: 'The transaction was deleted successfully.',
         });
-    };
+        handleClose();
+        resetValues();
+      })
+      .catch((error) => {
+        setAlertInfo({
+          open: true,
+          error: true,
+          message: 'There was an error with the request.',
+        });
+        setLoading(false);
+        console.error('Error:', error);
+      });
+  };
 
   return (
     <div>
@@ -244,6 +223,7 @@ function TransactionForm({ open, handleClose, transactionInfo }: ComponentProps)
         <DialogTitle>Transaction</DialogTitle>
         <DialogContent>
           <Box
+            maxWidth="md"
             component="form"
             noValidate
             autoComplete="off"
@@ -383,7 +363,7 @@ function TransactionForm({ open, handleClose, transactionInfo }: ComponentProps)
       </Dialog>
     </div>
   );
-};
+}
 
 export default TransactionForm;
 // https://codevoweb.com/form-validation-react-hook-form-material-ui-react/

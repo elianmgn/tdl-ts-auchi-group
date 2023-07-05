@@ -1,5 +1,6 @@
 .form-container {
   display: flex;
+  /* width: 200px; */
   flex-direction: column;
   margin-top: 10px;
   gap: 20px;

@@ -2,8 +2,11 @@ import React from 'react';
 import { Button, Box, Grid, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Currencies from './Currencies';
+import useApiService from '../../services/apiService';
 
-const GetAccountBalances = async () => {
+const GetAccountBalances = async (
+  getUserBalance: (params: Record<string, string>) => Promise<Response>,
+) => {
   try {
     const today = new Date();
     const year = today.getFullYear();
@@ -11,20 +14,10 @@ const GetAccountBalances = async () => {
 
     const formattedDate = `${year}-${month}-01`;
 
-    const generalResponse = await fetch('http://localhost:8080/user/balance/admin', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const generalResponse = await getUserBalance({});
     const generalBalance = await generalResponse.json();
 
-    const currentMonthResponse = await fetch(`http://localhost:8080/user/balance/admin?dateFrom=${formattedDate}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const currentMonthResponse = await getUserBalance({ dateFrom: formattedDate });
     const currentMonthBalance = await currentMonthResponse.json();
 
     return [generalBalance, currentMonthBalance];
@@ -34,15 +27,15 @@ const GetAccountBalances = async () => {
   }
 };
 
-
 function AccountBalance() {
+  const { getUserBalance } = useApiService();
   const navigate = useNavigate();
   const [balance, setBalance] = React.useState(0);
-  const [variance, setVariance] = React.useState("+ AR$ 0");
+  const [variance, setVariance] = React.useState('+ AR$ 0');
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
-    GetAccountBalances().then((data) => {
+    GetAccountBalances(getUserBalance).then((data) => {
       setBalance(data[0]);
       determineVariance(data[1]);
       setIsLoading(false);
@@ -51,9 +44,9 @@ function AccountBalance() {
 
   const determineVariance = (currentMonthBalance: number) => {
     if (currentMonthBalance < 0) {
-      setVariance("- AR$ " + currentMonthBalance.toLocaleString().substring(1));
+      setVariance('- AR$ ' + currentMonthBalance.toLocaleString().substring(1));
     } else {
-      setVariance("+ AR$ " + currentMonthBalance.toLocaleString());
+      setVariance('+ AR$ ' + currentMonthBalance.toLocaleString());
     }
   };
 

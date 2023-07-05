@@ -7,7 +7,7 @@ import categoryEntity from '../../models/CategoryEntity';
 type Categories = {
   name: string;
   description: string;
-  icon: string; 
+  icon: string;
   color: string;
 };
 
@@ -15,10 +15,10 @@ type BarChartProps = {
   transactions: TransactionEntity[];
 };
 
-export function noDuplicateCategories(categoriesInTransactions: typeof categoryEntity[] ) {
+export function noDuplicateCategories(categoriesInTransactions: (typeof categoryEntity)[]) {
   const categoriesIDs: number[] = [];
   return categoriesInTransactions.filter((category: typeof categoryEntity) => {
-    if (category.id){
+    if (category.id) {
       if (categoriesIDs.includes(category.id)) {
         return false;
       }
@@ -39,12 +39,19 @@ export default function CategoriesList(props: BarChartProps) {
 
   const generateCategoryData = (transactions: TransactionEntity[]) => {
     const results: Categories[] = [];
-    const categoriesInTransactions = transactions.map((transaction: TransactionEntity) => transaction.category);
-    const categoriesInTransactionsNoDuplicates = noDuplicateCategories(categoriesInTransactions);    
+    const categoriesInTransactions = transactions.map(
+      (transaction: TransactionEntity) => transaction.category,
+    );
+    const categoriesInTransactionsNoDuplicates = noDuplicateCategories(categoriesInTransactions);
     categoriesInTransactionsNoDuplicates.forEach((category) => {
-      results.push({ name: category.name, description: category.description, icon: category.icon, color: category.color});
+      results.push({
+        name: category.name,
+        description: category.description,
+        icon: category.icon,
+        color: category.color,
+      });
     });
-    
+
     return results;
   };
 
@@ -61,9 +68,18 @@ export default function CategoriesList(props: BarChartProps) {
                 <Icon style={{ color: itemColor, fontSize: 45, marginRight: 10 }}>{itemIcon}</Icon>
                 <ListItemText
                   primary={category.name}
-                  primaryTypographyProps={{ variant: 'h5', noWrap: true, fontFamily: 'Segoe UI', fontWeight: 100 }}
+                  primaryTypographyProps={{
+                    variant: 'h5',
+                    noWrap: true,
+                    fontFamily: 'Noto Sans',
+                    fontWeight: 100,
+                  }}
                   secondary={itemDescription}
-                  secondaryTypographyProps={{ noWrap: true, fontFamily: 'Segoe UI', fontWeight: 200 }}
+                  secondaryTypographyProps={{
+                    noWrap: false,
+                    fontFamily: 'Noto Sans',
+                    fontWeight: 200,
+                  }}
                 />
               </Box>
             </ListItem>
@@ -73,4 +89,3 @@ export default function CategoriesList(props: BarChartProps) {
     </Grid>
   );
 }
-
