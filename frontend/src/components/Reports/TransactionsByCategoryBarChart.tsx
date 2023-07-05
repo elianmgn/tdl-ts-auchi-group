@@ -65,8 +65,6 @@ export default function TransactionsByCategoryBarChart(props: BarChartProps) {
 
   return (
     <Chart
-      height={300}
-      width={400}
       options={chartOptions}
       series={[{ data: chartSeries }]}
       type="bar"

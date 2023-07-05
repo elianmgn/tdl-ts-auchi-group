@@ -69,8 +69,6 @@ export default function BalanceByCategoriesBarChart(props: BarChartProps) {
 
   return (
       <Chart
-        height={300}
-        width={400}
         options={chartOptions}
         series={[{ data: chartSeries }]}
         type="bar"

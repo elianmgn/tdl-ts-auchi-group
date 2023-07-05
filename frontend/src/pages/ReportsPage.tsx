@@ -13,13 +13,13 @@ const ReportsPage = () => {
   const month = (today.getMonth() + 1).toString().padStart(2, '0');
   const firstMonthDayFormatted = `${year}-${month}-01`;
   // Get last day of current month, formatted as yyyy-mm-dd
-  const toDate = new Date(year, today.getMonth() + 1, 1);
-  toDate.setDate(toDate.getDate() - 1);
-  const lastMonthDayFormatted = `${toDate.getFullYear()}-${(toDate.getMonth() + 1).toString().padStart(2, '0')}-${toDate.getDate().toString().padStart(2, '0')}`
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowDateFormatted = `${tomorrow.getFullYear()}-${(tomorrow.getMonth() + 1).toString().padStart(2, '0')}-${tomorrow.getDate().toString().padStart(2, '0')}`;
   // Set them as default values for the filters
   const [filters, setFilters] = React.useState({
     dateFrom: firstMonthDayFormatted,
-    dateTo: lastMonthDayFormatted,
+    dateTo: tomorrowDateFormatted,
   });
   const [isLoading, setIsLoading] = React.useState(false);
   const [transactions, setTransactions] = React.useState([]);
@@ -32,8 +32,11 @@ const ReportsPage = () => {
   };
 
   React.useEffect(() => {
-      getTransactions()
-    }, []);
+    getTransactions()
+  }, []);
+  React.useEffect(() => {
+    getTransactions();
+  }, [filters]);
 
   const getTransactions = async () => {
     try {
@@ -53,9 +56,10 @@ const ReportsPage = () => {
     }
   };
 
+
   return (
     <>
-      <ReportChartsHeader filters={filters} handleFilterChange={handleFilterChange} handleGenerateReports={getTransactions}/>
+      <ReportChartsHeader handleFilterChange={handleFilterChange} />
       {
         isLoading ?
         <div>Loading...</div>

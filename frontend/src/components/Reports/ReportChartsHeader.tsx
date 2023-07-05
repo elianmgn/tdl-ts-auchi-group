@@ -1,53 +1,54 @@
 import React from 'react';
 import {
   AppBar,
-  TextField,
   Button,
 } from '@mui/material';
-import AssessmentIcon from '@mui/icons-material/Assessment';
 import './ReportChartsHeader.css';
 
 interface ComponentProps {
-  filters: Record<string, string>;
   handleFilterChange: (filterName: string, value: string | null) => void;
-  handleGenerateReports: () => void;
 }
 
-function ReportChartsHeader({ filters, handleFilterChange, handleGenerateReports }: ComponentProps) {
+function ReportChartsHeader({ handleFilterChange }: ComponentProps) {
+  const today = new Date();
+
+  const handleCurrentMonth = () => {
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const firstMonthDayFormatted = `${year}-${month}-01`;
+    handleFilterChange('dateFrom', firstMonthDayFormatted);
+  };
+
+  const handleLastXMonths = (monthNumber: number) => {
+    const fromDate = new Date(today);
+    fromDate.setMonth(fromDate.getMonth() - monthNumber);
+    const year = fromDate.getFullYear();
+    const month = (fromDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = fromDate.getDate().toString().padStart(2, '0');
+    const fromDateFormatted = `${year}-${month}-${day}`;
+    handleFilterChange('dateFrom', fromDateFormatted);
+  };
+
+  const handleLastYear = () => {
+    const fromDate = new Date(today);
+    fromDate.setFullYear(fromDate.getFullYear() - 1);
+    const year = fromDate.getFullYear();
+    const month = (fromDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = fromDate.getDate().toString().padStart(2, '0');
+    const fromDateFormatted = `${year}-${month}-${day}`;
+    handleFilterChange('dateFrom', fromDateFormatted);
+  };
+
   return (
     <AppBar position="static" style={{ background: '#f5f5f5' }}>
       <div className="header-container">
-        {/* Controles de filtrado */}
+        {/* Filter controls */}
         <div className="filter-container">
-          {/* Date */}
-          <TextField
-            variant="standard"
-            label="From"
-            type="date"
-            value={filters.dateFrom}
-            onChange={(event) => handleFilterChange('dateFrom', event.target.value)}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-
-          <TextField
-            variant="standard"
-            label="To"
-            type="date"
-            value={filters.dateTo}
-            onChange={(event) => handleFilterChange('dateTo', event.target.value)}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-        </div>
-
-        {/* Botón de agregar */}
-        <div>
-          <Button variant="contained" onClick={handleGenerateReports} startIcon={<AssessmentIcon />}>
-            Generate Reports
-          </Button>
+          {/* Date filters */}
+          <Button variant="outlined" onClick={() => handleCurrentMonth()}>Current Month</Button>
+          <Button variant="outlined" onClick={() => handleLastXMonths(3)}>Last 3 months</Button>
+          <Button variant="outlined" onClick={() => handleLastXMonths(6)}>Last 6 months</Button>
+          <Button variant="outlined" onClick={() => handleLastYear()}>Last year</Button>
         </div>
         {/* </Toolbar> */}
       </div>
