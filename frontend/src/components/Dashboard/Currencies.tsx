@@ -1,6 +1,6 @@
-import React from "react";
-import { Grid } from "@mui/material";
-import MiniCard from "./MiniCard";
+import React from 'react';
+import { Grid, Skeleton } from '@mui/material';
+import MiniCard from './MiniCard';
 
 const GetCurrencyExchange = async () => {
   try {
@@ -28,40 +28,62 @@ interface CurrencyExchange {
 export default function Currencies(props: CurrenciesProps) {
   const { balance } = props;
   const [currencyExchange, setCurrencyExchange] = React.useState<CurrencyExchange[] | null>(null);
-  const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
     GetCurrencyExchange().then((data) => {
       setCurrencyExchange(data);
     });
-    setIsLoading(false);
   }, []);
 
   return (
     <>
-    {isLoading ? <div>Loading...</div> : 
-      <>
-        {
-          currencyExchange ?
-            <Grid container p={2} gap={5} justifyContent='center'>
-              <Grid item xs={2.5}>
-                <MiniCard balance={balance} currencyName={currencyExchange[0].casa.nombre} currencyValue={currencyExchange[0].casa.venta}/>
-              </Grid>
-              <Grid item xs={2.5}>
-                <MiniCard balance={balance} currencyName={currencyExchange[1].casa.nombre} currencyValue={currencyExchange[1].casa.venta}/>
-              </Grid>
-              <Grid item xs={2.5}>
-                <MiniCard balance={balance} currencyName={currencyExchange[3].casa.nombre} currencyValue={currencyExchange[3].casa.venta}/>
-              </Grid>
-              <Grid item xs={2.5}>
-                <MiniCard balance={balance} currencyName={currencyExchange[6].casa.nombre} currencyValue={currencyExchange[6].casa.venta}/>
-              </Grid>
-            </Grid>
-            :
-            null
-        }
-      </>
-    }
-  </>
-  )
+      {currencyExchange ? (
+        <Grid container p={2} gap={5} justifyContent="center">
+          <Grid item xs={2.5}>
+            <MiniCard
+              balance={balance}
+              currencyName={currencyExchange[0].casa.nombre}
+              currencyValue={currencyExchange[0].casa.venta}
+            />
+          </Grid>
+          <Grid item xs={2.5}>
+            <MiniCard
+              balance={balance}
+              currencyName={currencyExchange[1].casa.nombre}
+              currencyValue={currencyExchange[1].casa.venta}
+            />
+          </Grid>
+          <Grid item xs={2.5}>
+            <MiniCard
+              balance={balance}
+              currencyName={currencyExchange[3].casa.nombre}
+              currencyValue={currencyExchange[3].casa.venta}
+            />
+          </Grid>
+          <Grid item xs={2.5}>
+            <MiniCard
+              balance={balance}
+              currencyName={currencyExchange[6].casa.nombre}
+              currencyValue={currencyExchange[6].casa.venta}
+            />
+          </Grid>
+        </Grid>
+      ) : (
+        <Grid container p={2} gap={5} justifyContent="center">
+          <Grid item xs={2.5}>
+            <Skeleton variant="rounded" height={100} />
+          </Grid>
+          <Grid item xs={2.5}>
+            <Skeleton variant="rounded" height={100} />
+          </Grid>
+          <Grid item xs={2.5}>
+            <Skeleton variant="rounded" height={100} />
+          </Grid>
+          <Grid item xs={2.5}>
+            <Skeleton variant="rounded" height={100} />
+          </Grid>
+        </Grid>
+      )}
+    </>
+  );
 }

@@ -133,6 +133,7 @@ export const UserProvider: React.FC<BrowserRouterProps> = ({ children }) => {
     startTokenTimer(userData.access_token);
     setItem('userToken', JSON.stringify(userData.access_token));
     setItem('currentUser', JSON.stringify(userData));
+    window.location.reload();
     setIsLoading(false);
   };
 

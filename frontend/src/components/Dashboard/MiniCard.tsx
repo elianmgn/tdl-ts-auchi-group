@@ -14,7 +14,12 @@ export default function MiniCard(props: MiniCardProps): React.ReactElement {
   const value = parseFloat(currencyValue.replace(',', '.'));
 
   return (
-    <Card sx={{ backgroundColor: '#f5f7ff', padding: 2 }}>
+    <Card
+      sx={{
+        backgroundColor: '#f5f7ff',
+        padding: 2,
+      }}
+    >
       <Grid container>
         <Grid item display="flex" alignItems="center">
           <AttachMoneyIcon />
