@@ -1,9 +1,10 @@
-import React, { createContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useState, useEffect, useRef, useContext } from 'react';
 import { BrowserRouterProps } from 'react-router-dom';
 import useLocalStorage from '../services/localStorageService';
 import useApiService from '../services/apiService';
 import { UserEntity } from '../models/UserEntity';
 import jwtDecode from 'jwt-decode';
+import { SnackbarContext } from './SnackbarContext';
 
 const secondsToMillisecondsMultiplier = 1000;
 
@@ -47,6 +48,7 @@ export const UserContext = createContext<UserContextType>({
 
 // Crea el componente proveedor del contexto
 export const UserProvider: React.FC<BrowserRouterProps> = ({ children }) => {
+  const { showSnackbar } = useContext(SnackbarContext);
   const { setItem, getItem, removeItem } = useLocalStorage();
   const { loginUser, registerUser } = useApiService();
   const [isLoading, setIsLoading] = useState(true);
@@ -54,15 +56,6 @@ export const UserProvider: React.FC<BrowserRouterProps> = ({ children }) => {
   const [userToken, setUserToken] = useState<string | null>(null);
 
   const tokenTimerIdRef = useRef<NodeJS.Timeout | null>(null);
-
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   const user = getItem('user');
-  //   if (user) {
-  //     setCurrentUser(JSON.parse(user));
-  //   }
-  //   setIsLoading(false);
-  // }, []);
 
   useEffect(() => {
     // Checks whether user is logged in when 'userToken' changes
@@ -82,11 +75,11 @@ export const UserProvider: React.FC<BrowserRouterProps> = ({ children }) => {
     // Calculamos el tiempo que debe durar el token como la diferencia
     // entre su hora de expiracion y la hora actual (en milisegundos)
     const tokenExpirationTime =
-      decodedToken.exp * secondsToMillisecondsMultiplier - currentDate.getTime();
-
+    decodedToken.exp * secondsToMillisecondsMultiplier - currentDate.getTime();
+    
     tokenTimerIdRef.current = setTimeout(async () => {
       // Si se llega al timeout lanzamos la alerta y hacemos el logout
-      console.log('Your session has expired');
+      showSnackbar('Your session has expired', 'warning');
       logout();
     }, tokenExpirationTime);
   }
@@ -113,6 +106,7 @@ export const UserProvider: React.FC<BrowserRouterProps> = ({ children }) => {
       if (retrievedUserToken && user) {
         setUserToken(retrievedUserToken);
         setCurrentUser(JSON.parse(user));
+        startTokenTimer(retrievedUserToken);
       } else {
         logout();
         clearTokenTimer();
@@ -131,6 +125,7 @@ export const UserProvider: React.FC<BrowserRouterProps> = ({ children }) => {
     // Lógica de autenticación
     const userData = await loginUser(username, password);
     if (!userData) {
+      showSnackbar('Wrong username or password', 'error');
       setIsLoading(false);
       return;
     }
@@ -138,6 +133,7 @@ export const UserProvider: React.FC<BrowserRouterProps> = ({ children }) => {
     startTokenTimer(userData.access_token);
     setItem('userToken', JSON.stringify(userData.access_token));
     setItem('currentUser', JSON.stringify(userData));
+    window.location.reload();
     setIsLoading(false);
   };
 
@@ -154,6 +150,7 @@ export const UserProvider: React.FC<BrowserRouterProps> = ({ children }) => {
     const userData = await registerUser(username, password, email, firstName, lastName);
     console.log(userData);
     if (!userData) {
+      showSnackbar('Error registering user', 'error');
       setIsLoading(false);
       return;
     }

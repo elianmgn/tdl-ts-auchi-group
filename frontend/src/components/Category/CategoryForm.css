@@ -1,6 +1,7 @@
 .form-container {
     display: flex;
     flex-direction: column;
+    width: auto;
     margin-top: 10px;
     gap: 20px;
 }
@@ -10,14 +11,26 @@
   align-items: center;
   gap: 20px;
 }
-.type-container {
+.icon-input {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 20px;
+  /* flex: 1; */
+  background-color: gray;
+  justify-content: center;
+  width: 30px;
+  border-radius: 100px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
-.toggle-button-group {
-  margin-bottom: 2px;
+.color-input {
+  display: flex;
+  flex: 1;
+  border-radius: 100px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 .bottom-buttons {
   display: flex;

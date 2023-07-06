@@ -9,8 +9,6 @@ import {
   IconButton,
   OutlinedInput,
   InputAdornment,
-  Alert,
-  Snackbar,
 } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -36,7 +34,6 @@ const LoginForm: React.FC = () => {
   const { login } = useContext(UserContext);
 
   const [loading, setLoading] = useState(false);
-  const [alertInfo, setAlertInfo] = useState({ open: false, error: false, message: '' });
   const [showPassword, setShowPassword] = React.useState(false);
 
   // Handle Password Visibility
@@ -44,15 +41,6 @@ const LoginForm: React.FC = () => {
 
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-  };
-
-  // Handle Alert
-  const handleCloseAlert = (event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setAlertInfo({ open: false, error: alertInfo['error'], message: alertInfo['message'] });
   };
 
   // Handle Form
@@ -87,16 +75,6 @@ const LoginForm: React.FC = () => {
 
   return (
     <div className="container">
-      <Snackbar
-        open={alertInfo['open']}
-        autoHideDuration={3000}
-        onClose={handleCloseAlert}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert variant="filled" severity={alertInfo['error'] ? 'error' : 'success'}>
-          {alertInfo['message']}
-        </Alert>
-      </Snackbar>
       <div className="login-container">
         <div className="app-name">
           <img src={budgetifyLogo} alt="Logo" className="app-logo" />
@@ -149,12 +127,6 @@ const LoginForm: React.FC = () => {
           >
             Login
           </LoadingButton>
-          {/* <Button
-          onClick={() => navigate('/register')}
-          sx={{ my: 2, color: 'blue', display: 'block' }}
-        >
-          Register
-        </Button> */}
         </Box>
         <p className="register-text" onClick={() => navigate('/register')}>
           Not a member?<button>Signup</button>
