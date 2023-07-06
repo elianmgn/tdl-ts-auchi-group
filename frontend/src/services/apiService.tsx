@@ -5,7 +5,6 @@ const API_URL = 'http://localhost:8080';
 
 const useApiService = () => {
   const { currentUser } = useContext(UserContext);
-  console.log(currentUser);
   const headerConfig = {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${currentUser?.access_token}`,

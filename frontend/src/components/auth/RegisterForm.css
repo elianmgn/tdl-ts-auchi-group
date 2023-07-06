@@ -6,14 +6,12 @@
     align-items: center;
     justify-content: center;
     align-content: center;
-    /* border: 2px solid red; */
 }
 .login-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    /* margin-top: 10px; */
     gap: 20px;
     width: 500px;
     border: 1px solid #ccc;
@@ -24,12 +22,8 @@
 }
 .form-container {
     display: flex;
-    /* flex-direction: column;
-    justify-content: center;
-    align-items: center; */
     width: 500px;
     gap: 20px;
-    /* padding: 20px; */
 }
 .app-name {
     display: flex;
@@ -41,13 +35,11 @@
     max-height: 45px;
     max-width: 45px;
     fill: #3874cb;
-    /* filter: invert(43%) sepia(85%) saturate(508%) hue-rotate(176deg) brightness(85%) contrast(87%); */
 }
 .app-text {
     color: #3874cb;
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 40px;
-    /* margin-inline: 10px; */
     padding-bottom: 5px;
 }
 .bottom-buttons {
@@ -65,4 +57,5 @@ button {
     background-color: white;
     font-size: 15px;
     border: 0px;
+    cursor: pointer;
 }
