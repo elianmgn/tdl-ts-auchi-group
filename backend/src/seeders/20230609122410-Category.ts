@@ -5,7 +5,6 @@ module.exports = {
     return queryInterface.bulkInsert('Category', [
       {
         id: 1,
-        user_id: 1,
         name: 'Entertainment',
         description: 'Activities and events for leisure and entertainment',
         icon: 'theater_comedy',
@@ -15,7 +14,6 @@ module.exports = {
       },
       {
         id: 2,
-        user_id: 1,
         name: 'Supermarket',
         description: 'Supermarket and grocery shopping',
         icon: 'shopping_cart',
@@ -25,7 +23,6 @@ module.exports = {
       },
       {
         id: 3,
-        user_id: 1,
         name: 'Travel',
         description: 'Travel and transportation',
         icon: 'flight',
@@ -35,7 +32,6 @@ module.exports = {
       },
       {
         id: 4,
-        user_id: 1,
         name: 'Other',
         description: 'Other transactions',
         icon: 'category',

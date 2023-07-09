@@ -21,7 +21,9 @@ export class CategoryService {
     },
   ): Promise<Category[]> {
     const userWithId = await this.userService.findOneUserByUsername(username);
-    const where: any = { userId: userWithId.id };
+    const where: any = {
+      [Op.or]: [{ userId: userWithId.id }, { userId: null }],
+    };
 
     if (filters.name) {
       where.name = {
