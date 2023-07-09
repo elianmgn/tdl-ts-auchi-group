@@ -8,6 +8,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { Transaction } from '../transaction/model';
+import { Category } from '../category/model';
 
 @Table({ tableName: 'User' })
 export class User extends Model<User> {
@@ -33,6 +34,9 @@ export class User extends Model<User> {
 
   @HasMany(() => Transaction)
   transactions: Transaction[];
+
+  @HasMany(() => Category)
+  categories: Category[];
 
   @Column({ field: 'created_at' })
   createdAt: Date;
