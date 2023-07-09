@@ -16,13 +16,14 @@ import { Category } from './model';
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
-  @Get()
-  getCategories(
+  @Get(':username')
+  getFilteredUserCategories(
+    @Param('username') username: string,
     @Query('name') name: string,
     @Query('dateFrom') dateFrom: string,
     @Query('dateTo') dateTo: string,
   ): Promise<Category[]> {
-    return this.categoryService.getFilteredCategories({
+    return this.categoryService.getFilteredUserCategories(username, {
       name,
       dateFrom,
       dateTo,
@@ -49,10 +50,10 @@ export class CategoryController {
     return JSON.stringify(categoriesSummaryJson);
   }
 
-  @Post()
-  addCategory(@Request() req) {
+  @Post(':username')
+  addUserCategory(@Param('username') username: string, @Request() req) {
     const category = req.body;
-    return this.categoryService.addCategory(category);
+    return this.categoryService.addUserCategory(username, category);
   }
 
   @Put(':id')

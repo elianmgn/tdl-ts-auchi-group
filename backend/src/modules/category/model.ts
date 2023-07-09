@@ -1,12 +1,14 @@
 import {
   AutoIncrement,
   Column,
+  ForeignKey,
   HasMany,
   Model,
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
 import { Transaction } from '../transaction/model';
+import { User } from '../user/model';
 
 @Table({ tableName: 'Category' })
 export class Category extends Model<Category> {
@@ -14,6 +16,10 @@ export class Category extends Model<Category> {
   @AutoIncrement
   @Column
   id: number;
+
+  @ForeignKey(() => User)
+  @Column({ field: 'user_id' })
+  userId: number;
 
   @Column
   description: string;

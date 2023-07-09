@@ -77,7 +77,7 @@ const useApiService = () => {
     }
     const qparams = new URLSearchParams(params).toString();
     try {
-      const url = `${API_URL}/categories?${qparams}`;
+      const url = `${API_URL}/categories/${currentUser?.username}?${qparams}`;
       const response = await fetch(url, {
         method: 'GET',
         headers: headerConfig,
@@ -92,7 +92,7 @@ const useApiService = () => {
 
   const postUserCategory = async (body: string) => {
     // Post category to API and return response. Body is a JSON string.
-    const url = `${API_URL}/categories/`;
+    const url = `${API_URL}/categories/${currentUser?.username}`;
     const response = await fetch(url, {
       method: 'POST',
       headers: headerConfig,

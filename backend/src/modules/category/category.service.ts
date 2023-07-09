@@ -2,19 +2,28 @@ import { Injectable } from '@nestjs/common';
 import { Category, UpdateCategoryDto } from './model';
 import { Op } from 'sequelize';
 import { Transaction } from '../transaction/model';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class CategoryService {
+  constructor(private userService: UserService) {}
+
   async findCategoryById(id: number) {
     return Category.findByPk(id);
   }
 
-  async getFilteredCategories(filters: {
-    name?: string;
-    dateFrom?: string;
-    dateTo?: string;
-  }): Promise<Category[]> {
-    const where: any = {};
+  async getFilteredUserCategories(
+    username: string,
+    filters: {
+      name?: string;
+      dateFrom?: string;
+      dateTo?: string;
+    },
+  ): Promise<Category[]> {
+    const userWithId = await this.userService.findOneUserByUsername(username);
+    const where: any = {
+      [Op.or]: [{ userId: userWithId.id }, { userId: null }],
+    };
 
     if (filters.name) {
       where.name = {
@@ -105,9 +114,11 @@ export class CategoryService {
     return categoriesSummary;
   }
 
-  async addCategory(category: Category) {
+  async addUserCategory(username: string, category: Category) {
+    const user = await this.userService.findOneUserByUsername(username);
     return Category.create({
       ...category,
+      userId: user.id,
     });
   }
 
