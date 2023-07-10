@@ -21,7 +21,8 @@
     "seeders": "sequelize db:seed:all",
     "restartdb": "yarn run dropdb && yarn run createdb && yarn run migrations && yarn run seeders",
     "buildAndMigrate": "yarn run build && yarn run migrations",
-    "buildAndSeed": "yarn run build && yarn run seeders"
+    "buildAndSeed": "yarn run build && yarn run seeders",
+    "postinstall": "mkdir -p src/dist"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
