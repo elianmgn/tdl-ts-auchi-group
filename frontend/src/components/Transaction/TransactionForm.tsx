@@ -282,6 +282,9 @@ function TransactionForm({ open, handleClose, transactionInfo }: ComponentProps)
                   {category.name}
                 </MenuItem>
               ))}
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
             </Select>
             <FormHelperText>{errors['category'] ? errors['category'].message : ''}</FormHelperText>
           </FormControl>

@@ -30,7 +30,10 @@ export class UserService {
 
     const userInDb = await this.findOneUserByEmail(email);
     if (userInDb) {
-      throw new HttpException('User already exists', HttpStatus.CONFLICT);
+      throw new HttpException(
+        'An User with that email already exists',
+        HttpStatus.CONFLICT,
+      );
     }
     const hashedUser = userDto;
     hashedUser.password = hashSync(password);

@@ -25,18 +25,28 @@ export default function TransactionsByCategoryBarChart(props: BarChartProps) {
   }, []);
 
   const generateCategoryData = (transactions: TransactionEntity[]) => {
-    const results: { category: string, amount: number, description: string, icon: string, color: string }[] = [];
-    const categoriesInTransactions = transactions.map((transaction: TransactionEntity) => transaction.category);
-    const categoriesInTransactionsNoDuplicates = noDuplicateCategories(categoriesInTransactions);        
+    const results: {
+      category: string;
+      amount: number;
+      description: string;
+      icon: string;
+      color: string;
+    }[] = [];
+    const categoriesInTransactions = transactions.map(
+      (transaction: TransactionEntity) => transaction.category,
+    );
+    const categoriesInTransactionsNoDuplicates = noDuplicateCategories(categoriesInTransactions);
     categoriesInTransactionsNoDuplicates.forEach((category) => {
-      const transactionsInCategory = transactions.filter((transaction: TransactionEntity) => transaction.category.id === category.id);
+      const transactionsInCategory = transactions.filter(
+        (transaction: TransactionEntity) => transaction.category.id === category.id,
+      );
       const amount = transactionsInCategory.length;
       const description = category.description;
       const icon = category.icon;
       const color = category.color;
       results.push({ category: category.name, amount, description, icon, color });
     });
-    
+
     return results;
   };
 
@@ -45,29 +55,24 @@ export default function TransactionsByCategoryBarChart(props: BarChartProps) {
       background: 'transparent',
       stacked: false,
       toolbar: {
-        show: false
-      }
+        show: false,
+      },
     },
     plotOptions: {
       bar: {
-        horizontal: false
-      }
+        horizontal: false,
+        distributed: true,
+      },
     },
     colors: chartCategoriesColor,
     labels: chartCategories,
     legend: {
       labels: {
-        colors: '#FFFFFF'
+        colors: '#FFFFFF',
       },
-      show: false
-    }
+      show: false,
+    },
   };
 
-  return (
-    <Chart
-      options={chartOptions}
-      series={[{ data: chartSeries }]}
-      type="bar"
-    />
-  );
+  return <Chart options={chartOptions} series={[{ data: chartSeries }]} type="bar" />;
 }

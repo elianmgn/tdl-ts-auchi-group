@@ -25,17 +25,24 @@ export default function BalanceByCategoriesBarChart(props: BarChartProps) {
   }, []);
 
   const generateBalanceData = (transactions: TransactionEntity[]) => {
-    const results: { category: string, balance: number, icon: string, color: string }[] = [];
-    const categoriesInTransactions = transactions.map((transaction: TransactionEntity) => transaction.category);
+    const results: { category: string; balance: number; icon: string; color: string }[] = [];
+    const categoriesInTransactions = transactions.map(
+      (transaction: TransactionEntity) => transaction.category,
+    );
     const categoriesInTransactionsNoDuplicates = noDuplicateCategories(categoriesInTransactions);
     categoriesInTransactionsNoDuplicates.forEach((category) => {
-      const transactionsInCategory = transactions.filter((transaction: TransactionEntity) => transaction.category.id === category.id);
-      const balance = transactionsInCategory.reduce((sum: number, transaction: TransactionEntity) => sum + transaction.amount, 0);
+      const transactionsInCategory = transactions.filter(
+        (transaction: TransactionEntity) => transaction.category.id === category.id,
+      );
+      const balance = transactionsInCategory.reduce(
+        (sum: number, transaction: TransactionEntity) => sum + transaction.amount,
+        0,
+      );
       const icon = category.icon;
       const color = category.color;
       results.push({ category: category.name, balance, icon, color });
     });
-    
+
     return results;
   };
 
@@ -50,6 +57,7 @@ export default function BalanceByCategoriesBarChart(props: BarChartProps) {
     plotOptions: {
       bar: {
         horizontal: false,
+        distributed: true,
       },
     },
     xaxis: {
@@ -67,12 +75,5 @@ export default function BalanceByCategoriesBarChart(props: BarChartProps) {
     },
   };
 
-  return (
-      <Chart
-        options={chartOptions}
-        series={[{ data: chartSeries }]}
-        type="bar"
-      />
-  );
+  return <Chart options={chartOptions} series={[{ data: chartSeries }]} type="bar" />;
 }
-

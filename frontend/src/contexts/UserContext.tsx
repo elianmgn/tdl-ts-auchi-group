@@ -125,7 +125,6 @@ export const UserProvider: React.FC<BrowserRouterProps> = ({ children }) => {
     // Lógica de autenticación
     const userData = await loginUser(username, password);
     if (!userData) {
-      showSnackbar('Wrong username or password', 'error');
       setIsLoading(false);
       return;
     }
@@ -150,7 +149,6 @@ export const UserProvider: React.FC<BrowserRouterProps> = ({ children }) => {
     const userData = await registerUser(username, password, email, firstName, lastName);
     console.log(userData);
     if (!userData) {
-      showSnackbar('Error registering user', 'error');
       setIsLoading(false);
       return;
     }

@@ -1,10 +1,12 @@
 import { useContext } from 'react';
 import { UserContext } from '../contexts/UserContext';
 import TransactionEntity from '../models/TransactionEntity';
+import { SnackbarContext } from '../contexts/SnackbarContext';
 const API_URL = 'http://localhost:8080';
 
 const useApiService = () => {
   const { currentUser } = useContext(UserContext);
+  const { showSnackbar } = useContext(SnackbarContext);
   const headerConfig = {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${currentUser?.access_token}`,
@@ -20,11 +22,12 @@ const useApiService = () => {
         },
         body: JSON.stringify({ username, password }),
       });
+      const responseJSON = await response.json();
       if (!response.ok) {
+        showSnackbar(responseJSON.message, 'error');
         return null;
       }
-      const userData = await response.json();
-      return userData;
+      return responseJSON;
     } catch (e) {
       console.error(e);
     }
@@ -46,13 +49,12 @@ const useApiService = () => {
         },
         body: JSON.stringify({ username, password, email, firstName, lastName }),
       });
-      console.log(response);
+      const responseJSON = await response.json();
       if (!response.ok) {
+        showSnackbar(responseJSON.message, 'error');
         return null;
       }
-      const userData = await response.json();
-      console.log(userData);
-      return userData;
+      return responseJSON;
     } catch (e) {
       console.error(e);
     }
@@ -98,6 +100,8 @@ const useApiService = () => {
       headers: headerConfig,
       body: body,
     });
+    console.log(response)
+    console.log(response.json());
     return response;
   };
 
